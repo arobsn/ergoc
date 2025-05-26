@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { type CompilerOutput, compile } from "@fleet-sdk/compiler";
-import { size, info, success, task } from "./console";
-import { parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 import { cyan, dim } from "kleur/colors";
+import { info, size, success, task } from "./console";
+import { parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 
 export interface CompilerFlags {
   network: string;
