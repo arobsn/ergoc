@@ -1,7 +1,7 @@
 {
   "name": "ergoc",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI ErgoScript Compiler",
   "author": "Alison Oliveira <arobsn@proton.me>",
   "repository": "github:arobsn/ergoc",

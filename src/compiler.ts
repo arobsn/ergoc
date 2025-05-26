@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { type CompilerOutput, compile } from "@fleet-sdk/compiler";
-import { cyan, dim, green, grey, white } from "kleur/colors";
+import { cyan, dim } from "kleur/colors";
 import { info, size, success, task } from "./console";
 import { parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 
@@ -12,10 +12,17 @@ export interface CompilerFlags {
   encoding: string;
   compact: boolean;
   verbose: boolean;
-  watch: boolean;
 }
 
-export function compileScript(file: string, flags: CompilerFlags): CompilerOutput {
+export interface CompileState {
+  recompiling: boolean;
+}
+
+export function compileScript(
+  file: string,
+  flags: CompilerFlags,
+  { recompiling }: CompileState = { recompiling: true }
+): CompilerOutput {
   const startTime = performance.now();
 
   const encoding = parseEncoding(flags.encoding);
@@ -30,7 +37,13 @@ export function compileScript(file: string, flags: CompilerFlags): CompilerOutpu
       : { version, ...commonOptions };
 
   if (!flags.compact) {
-    task(`Compiling ${cyan(file)}...`);
+    let action = "Compiling";
+    if (recompiling) {
+      console.clear();
+      action = "Recompiling";
+    }
+
+    task(`${action} ${cyan(file)}...`);
 
     if (flags.verbose) {
       info(dim("ErgoTree version  "), options.version);
@@ -56,12 +69,6 @@ export function compileScript(file: string, flags: CompilerFlags): CompilerOutpu
 
     console.log(dim(encoding === "base16" ? "ErgoTree" : "P2S Address"), size(treeBytes.length));
     console.log(encodedTree);
-  }
-
-  if (!flags.compact && flags.watch) {
-    console.log();
-    console.log(green("Waiting for changes..."));
-    console.log(grey(`Press ${white("Ctrl+C")} to exit`));
   }
 
   return tree;

@@ -1,11 +1,11 @@
-import { blue, green, red, yellow } from "kleur/colors";
+import { bgRed, blue, green, grey, red, white, yellow } from "kleur/colors";
 
 export function task(message: string): void {
   console.log(yellow("➜"), message);
 }
 
 export function error(message: string): void {
-  console.error(message);
+  console.error(bgRed(white(" ERROR ")), red(message));
 }
 
 export function info(...content: unknown[]): void {
@@ -14,6 +14,12 @@ export function info(...content: unknown[]): void {
 
 export function success(...content: unknown[]): void {
   console.log(green("✔"), ...content);
+}
+
+export function logWatchingUI(): void {
+  console.log();
+  console.log(green("Waiting for changes..."));
+  console.log(grey(`Press ${white("Ctrl+C")} to exit`));
 }
 
 const MAX_TREE_SIZE = 4_096;
