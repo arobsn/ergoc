@@ -1,7 +1,7 @@
 {
   "name": "ergoc",
   "type": "module",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.3",
   "description": "CLI ErgoScript Compiler",
   "author": "Alison Oliveira <arobsn@proton.me>",
   "license": "MIT",
@@ -28,5 +28,12 @@
   },
   "overrides": {
     "sigmastate-js": "0.4.2-snapshot.df430e899"
-  }
+  },
+  "files": [
+    "bin",
+    "dist",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ]
 }

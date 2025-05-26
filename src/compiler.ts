@@ -6,9 +6,9 @@ import { parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 
 export interface CompilerFlags {
   network: string;
-  ergoTreeVersion: string;
-  segregateConsts: boolean;
-  noSizeInfo: boolean;
+  ergotreeVersion: string;
+  constSegregation: boolean;
+  sizeInfo: boolean;
   encoding: string;
   compact: boolean;
   verbose: boolean;
@@ -18,14 +18,14 @@ export function compileScript(file: string, flags: CompilerFlags): CompilerOutpu
   const startTime = performance.now();
 
   const encoding = parseEncoding(flags.encoding);
-  const version = parseErgoTreeVersion(flags.ergoTreeVersion);
+  const version = parseErgoTreeVersion(flags.ergotreeVersion);
   const commonOptions = {
     network: parseNetwork(flags.network),
-    segregateConstants: flags.segregateConsts
+    segregateConstants: flags.constSegregation
   };
   const options =
     version === 0
-      ? { version, includeSize: !flags.noSizeInfo, ...commonOptions }
+      ? { version, includeSize: flags.sizeInfo, ...commonOptions }
       : { version, ...commonOptions };
 
   if (!flags.compact) {

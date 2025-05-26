@@ -1,6 +1,7 @@
-import { blue, bold, cyan, green } from "kleur/colors";
+import { blue, bold, cyan, green, yellow } from "kleur/colors";
 import meow from "meow";
 import { description, version } from "../package.json";
+import { allEncodings, ergoTreeVersions, networks } from "./flags";
 
 export function buildCli() {
   // follow the docopt style, http://docopt.org/
@@ -12,16 +13,16 @@ export function buildCli() {
         $ ${ergoc} ${ip("<script-file>")} ${cyan("[options]")} 
 
       Options
-        ${op("-w", "--watch")}               Watch for script changes
-        ${op("-h", "--help")}                Show help
-        ${op("-v", "--version")}             Show version
-        ${op("-c", "--compact")}             Compact output
-        ${op("-e TYPE", "--encoding TYPE")}  ErgoTree output encoding (hex, base58) [default: hex]
-        ${op("-n TYPE", "--network TYPE")}   Contract network (mainnet, testnet) [default: mainnet]
-        ${op("--ergotree-version")}        Output Ergotree version (0, 1, latest) [default: latest]
-        ${op("--segregate-consts")}        Segregate output constants [default: true]
-        ${op("--no-size-info")}            Don't include size info if ErgoTree version is set to 0
-        ${op("--verbose")}                 Enable verbose mode, showing additional information
+        ${op("-w", "--watch")}                 Watch for script changes
+        ${op("-h", "--help")}                  Show help
+        ${op("-v", "--version")}               Show version
+        ${op("-c", "--compact")}               Compact output
+        ${op("-e TYPE", "--encoding TYPE")}    ErgoTree output encoding (hex, base58) [default: hex]
+        ${op("-n TYPE", "--network TYPE")}     Contract network (mainnet, testnet) [default: mainnet]
+        ${op("--ergotree-version NUMBER")}  Output Ergotree version (0, 1, latest) [default: latest]
+        ${op("--no-const-segregation")}     Disable ErgoTree constants segregation
+        ${op("--no-size-info")}             Don't include size info if ErgoTree version is set to 0
+        ${op("--verbose")}                  Enable verbose mode, showing additional information
 
       Examples
         $ ${ex("./script.es")}
@@ -42,11 +43,11 @@ export function buildCli() {
         help: { type: "boolean", shortFlag: "h" },
         version: { type: "boolean", shortFlag: "v" },
         compact: { type: "boolean", shortFlag: "c", default: false },
-        encoding: { type: "string", shortFlag: "e", default: "hex" }, //     hex, base58
-        network: { type: "string", shortFlag: "n", default: "mainnet" }, //  mainnet, testnet
-        ergoTreeVersion: { type: "string", default: "latest" }, //           0, 1, latest
-        segregateConsts: { type: "boolean", default: true },
-        noSizeInfo: { type: "boolean", default: false },
+        encoding: { type: "string", shortFlag: "e", default: "hex" },
+        network: { type: "string", shortFlag: "n", default: "mainnet" },
+        ergotreeVersion: { type: "string", default: "latest" },
+        constSegregation: { type: "boolean", default: true },
+        sizeInfo: { type: "boolean", default: true },
         verbose: { type: "boolean", default: false }
       }
     }
@@ -60,10 +61,11 @@ function ip(...inputs: string[]): string {
 }
 
 function op(...flags: string[]): string {
-  return `${flags.map((f) => cyan(f)).join(", ")}`;
+  return `${flags.flatMap((f) => f.split(" ").map((x, i) => (i === 0 ? cyan(x) : yellow(x)))).join(" ")}`;
 }
 
 function ex(input: string, flags?: string[]): string {
   const e = `${ergoc} ${blue(input)}`;
-  return flags ? `${e} ${cyan(flags.join(" "))}` : e;
+
+  return flags ? `${e} ${op(...flags)}` : e;
 }
