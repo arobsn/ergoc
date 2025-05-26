@@ -4,9 +4,11 @@ A modern CLI compiler for ErgoScript, the smart contract language for the [Ergo 
 
 ## Features
 
-- ✨ **Simple** - Compile ErgoScript scripts with a single command
-- 🔄 **Watch mode** - Instantly recompile on script changes
-- 🔧 **Customizable** - Configure encoding, ErgoTree version, constant segregation, and more
+- ✨ **Effortless Compilation** – Compile ErgoScript contracts with a single, straightforward command.
+- 🔄 **Live Watch Mode** – Automatically recompile scripts on file changes for rapid development.
+- 🔧 **Flexible Configuration** – Easily adjust output encoding, ErgoTree version, constant segregation, and more to suit your workflow.
+- 📦 **Multiple Output Formats** – Generate both raw ErgoTree hex and ready-to-use base58 addresses.
+- 🚀 **Fast & Modern** – Built with TypeScript and Bun for speed, reliability, and modern developer experience.
 
 ## Installation
 
