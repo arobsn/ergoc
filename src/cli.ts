@@ -21,6 +21,7 @@ export function buildCli() {
         ${op("-ev", "--ergotree-version")}   Output Ergotree version (0, 1, latest) [default: latest]
         ${op("-sc", "--segregate-consts")}   Segregate output constants [default: true]
         ${op("-ns", "--no-size-info")}       Do not include size info in the output if ErgoTree version is set to 0 [default: false]
+        ${op("--verbose")}                   Enable verbose output
 
       Examples
         $ ${ex("./script.es")}
@@ -42,7 +43,8 @@ export function buildCli() {
         network: { type: "string", shortFlag: "n", default: "mainnet" }, //          mainnet, testnet
         ergoTreeVersion: { type: "string", shortFlag: "ev", default: "latest" }, //  0, 1, latest
         segregateConsts: { type: "boolean", shortFlag: "sc", default: true },
-        noSizeInfo: { type: "boolean", shortFlag: "ns", default: false }
+        noSizeInfo: { type: "boolean", shortFlag: "ns", default: false },
+        verbose: { type: "boolean", default: false }
       }
     }
   );
