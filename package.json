@@ -1,7 +1,7 @@
 {
   "name": "ergoc",
   "type": "module",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.2",
   "description": "CLI ErgoScript Compiler",
   "author": "Alison Oliveira <arobsn@proton.me>",
   "license": "MIT",

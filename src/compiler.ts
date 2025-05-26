@@ -32,11 +32,11 @@ export function compileScript(file: string, flags: CompilerFlags): CompilerOutpu
     task(`Compiling ${cyan(file)}...`);
 
     if (flags.verbose) {
-      info(dim("Version"), options.version);
-      info(dim("Network"), options.network);
-      info(dim("Encoding"), encoding === "base16" ? "base16 (hex)" : "base58 (address)");
-      info(dim("Segregate constants"), options.segregateConstants);
-      info(dim("Include size info"), options.version === 0 ? options.includeSize : true);
+      info(dim("ErgoTree version  "), options.version);
+      info(dim("Const segregation "), options.segregateConstants);
+      info(dim("Size info         "), options.version === 0 ? options.includeSize : true);
+      info(dim("Network           "), options.network);
+      info(dim("Encoding          "), encoding === "base16" ? "base16 (hex)" : "base58 (address)");
     }
   }
 
