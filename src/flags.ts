@@ -14,6 +14,12 @@ export function parseNetwork(network: string): "mainnet" | "testnet" {
   return network as "mainnet" | "testnet";
 }
 
+export function parseErgoTreeVersion(version: string): 0 | 1 {
+  if (!ergoTreeVersions.has(version)) throw invalidParameterError(version, ergoTreeVersions);
+  if (version === "0") return 0;
+  return 1; // "1" or "latest" both map to ErgoTree version 1
+}
+
 function invalidParameterError(param: string, validOptions: Set<string>): Error {
   return new Error(
     `Invalid parameter: '${param}'. Valid options are: ${Array.from(validOptions).join(", ")}`
