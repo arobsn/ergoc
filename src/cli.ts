@@ -1,7 +1,6 @@
 import { blue, bold, cyan, green, yellow } from "kleur/colors";
 import meow from "meow";
 import { description, version } from "../package.json";
-import { allEncodings, ergoTreeVersions, networks } from "./flags";
 
 export function buildCli() {
   // follow the docopt style, http://docopt.org/
@@ -40,6 +39,7 @@ export function buildCli() {
       description: false,
       autoHelp: true,
       flags: {
+        watch: { type: "boolean", shortFlag: "w", default: false },
         help: { type: "boolean", shortFlag: "h" },
         version: { type: "boolean", shortFlag: "v" },
         compact: { type: "boolean", shortFlag: "c", default: false },

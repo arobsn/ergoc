@@ -4,9 +4,8 @@ export function task(message: string): void {
   console.log(yellow("➜"), message);
 }
 
-export function error(message: string): never {
+export function error(message: string): void {
   console.error(message);
-  process.exit(1);
 }
 
 export function info(...content: unknown[]): void {
