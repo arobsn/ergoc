@@ -2,7 +2,7 @@
   "name": "ergoc",
   "type": "module",
   "version": "0.1.0-alpha.0",
-  "description": "An ErgoScript CLI Compiler",
+  "description": "CLI ErgoScript Compiler",
   "author": "Alison Oliveira <arobsn@proton.me>",
   "license": "MIT",
   "bin": {
@@ -12,21 +12,17 @@
     "build": "tsdown",
     "dev": "bun bin/cli.js",
     "test:unit": "bun test",
-    "fix:format": "biome check --formatter-enabled=true --organize-imports-enabled=true --write",
-    "fix:lint": "biome lint --write",
     "test:lint": "biome lint",
-    "test:format": "biome check --formatter-enabled=true --organize-imports-enabled=true"
+    "test:format": "biome check --formatter-enabled=true --organize-imports-enabled=true",
+    "fix:format": "biome check --formatter-enabled=true --organize-imports-enabled=true --write",
+    "fix:lint": "biome lint --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/bun": "latest",
     "meow": "^13.2.0",
-    "tsdown": "^0.12.3"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
+    "tsdown": "^0.12.3",
+    "typescript": "^5",
     "kleur": "^4.1.5"
   }
 }
