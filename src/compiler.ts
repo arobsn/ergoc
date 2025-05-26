@@ -53,7 +53,7 @@ export function compileScript(file: string, flags: CompilerFlags): CompilerOutpu
   } else {
     success(`Done in ${Math.floor(performance.now() - startTime)}ms\n`);
 
-    console.log(dim(encoding === "base16" ? "ErgoTree" : "Address"), size(treeBytes.length));
+    console.log(dim(encoding === "base16" ? "ErgoTree" : "P2S Address"), size(treeBytes.length));
     console.log(encodedTree);
   }
 

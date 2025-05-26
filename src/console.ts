@@ -30,7 +30,7 @@ export function size(bytes: number): string {
 }
 
 function formatBytes(bytes: number, decimals = 2) {
-  const b = "b";
+  const b = "bytes";
   if (!+bytes) return b;
 
   const k = 1024;

@@ -12,7 +12,7 @@ export function buildCli() {
         $ ${ergoc} ${ip("<script-file>")} ${cyan("[options]")} 
 
       Options
-        ${op("-w", "--watch")}               Watch for script file changes
+        ${op("-w", "--watch")}               Watch for script changes
         ${op("-h", "--help")}                Show help
         ${op("-v", "--version")}             Show version
         ${op("-c", "--compact")}             Compact output
