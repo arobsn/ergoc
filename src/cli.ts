@@ -18,9 +18,9 @@ export function buildCli() {
         ${op("-c", "--compact")}             Compact output
         ${op("-e TYPE", "--encoding TYPE")}  ErgoTree output encoding (hex, base58) [default: hex]
         ${op("-n TYPE", "--network TYPE")}   Contract network (mainnet, testnet) [default: mainnet]
-        ${op("-ev", "--ergotree-version")}   Output Ergotree version (0, 1, latest) [default: latest]
-        ${op("-sc", "--segregate-consts")}   Segregate output constants [default: true]
-        ${op("-ns", "--no-size-info")}       Don't include size info if ErgoTree version is set to 0
+        ${op("--ergotree-version")}        Output Ergotree version (0, 1, latest) [default: latest]
+        ${op("--segregate-consts")}        Segregate output constants [default: true]
+        ${op("--no-size-info")}            Don't include size info if ErgoTree version is set to 0
         ${op("--verbose")}                 Enable verbose mode, showing additional information
 
       Examples
@@ -42,11 +42,11 @@ export function buildCli() {
         help: { type: "boolean", shortFlag: "h" },
         version: { type: "boolean", shortFlag: "v" },
         compact: { type: "boolean", shortFlag: "c", default: false },
-        encoding: { type: "string", shortFlag: "e", default: "hex" }, //             hex, base58
-        network: { type: "string", shortFlag: "n", default: "mainnet" }, //          mainnet, testnet
-        ergoTreeVersion: { type: "string", shortFlag: "ev", default: "latest" }, //  0, 1, latest
-        segregateConsts: { type: "boolean", shortFlag: "sc", default: true },
-        noSizeInfo: { type: "boolean", shortFlag: "ns", default: false },
+        encoding: { type: "string", shortFlag: "e", default: "hex" }, //     hex, base58
+        network: { type: "string", shortFlag: "n", default: "mainnet" }, //  mainnet, testnet
+        ergoTreeVersion: { type: "string", default: "latest" }, //           0, 1, latest
+        segregateConsts: { type: "boolean", default: true },
+        noSizeInfo: { type: "boolean", default: false },
         verbose: { type: "boolean", default: false }
       }
     }
