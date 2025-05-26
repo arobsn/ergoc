@@ -20,12 +20,15 @@ export function buildCli() {
         ${op("-n TYPE", "--network TYPE")}   Contract network (mainnet, testnet) [default: mainnet]
         ${op("-ev", "--ergotree-version")}   Output Ergotree version (0, 1, latest) [default: latest]
         ${op("-sc", "--segregate-consts")}   Segregate output constants [default: true]
-        ${op("-ns", "--no-size-info")}       Do not include size info in the output if ErgoTree version is set to 0 [default: false]
-        ${op("--verbose")}                   Enable verbose output
+        ${op("-ns", "--no-size-info")}       Don't include size info if ErgoTree version is set to 0
+        ${op("--verbose")}                 Enable verbose mode, showing additional information
 
       Examples
         $ ${ex("./script.es")}
         $ ${ex("./script.es", ["--watch"])}
+        $ ${ex("./script.es", ["--encoding hex"])}
+        $ ${ex("./script.es", ["--encoding base58", "--network testnet"])}
+        $ ${ex("./script.es", ["--ergotree-version 0", "--verbose"])}
     `,
     {
       importMeta: import.meta,
