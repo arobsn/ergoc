@@ -19,10 +19,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@fleet-sdk/compiler": "^0.8.5",
     "@types/bun": "latest",
+    "kleur": "^4.1.5",
     "meow": "^13.2.0",
     "tsdown": "^0.12.3",
-    "typescript": "^5",
-    "kleur": "^4.1.5"
+    "typescript": "^5"
   }
 }

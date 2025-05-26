@@ -5,5 +5,5 @@ export default defineConfig({
   outDir: "dist",
   format: "esm",
   minify: true,
-  noExternal: ["meow", "kleur"]
+  noExternal: ["meow", "kleur", "@fleet-sdk/compiler"]
 });
