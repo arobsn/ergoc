@@ -12,12 +12,12 @@ export function buildCli() {
         $ ${ergoc} ${ip("<script-file>")} ${cyan("[options]")} 
 
       Options
-        ${op("-w", "--watch")}                 Watch for script changes
-        ${op("-h", "--help")}                  Show help
-        ${op("-v", "--version")}               Show version
-        ${op("-c", "--compact")}               Compact output
-        ${op("-e TYPE", "--encoding TYPE")}    ErgoTree output encoding (hex, base58) [default: hex]
-        ${op("-n TYPE", "--network TYPE")}     Contract network (mainnet, testnet) [default: mainnet]
+        ${op("-w", "--watch")}                Watch for script changes
+        ${op("-h", "--help")}                 Show help
+        ${op("-v", "--version")}              Show version
+        ${op("-c", "--compact")}              Compact output
+        ${op("-e TYPE", "--encoding TYPE")}   ErgoTree output encoding (hex, base58) [default: hex]
+        ${op("-n TYPE", "--network TYPE")}    Contract network (mainnet, testnet) [default: mainnet]
         ${op("--ergotree-version NUMBER")}  Output Ergotree version (0, 1, latest) [default: latest]
         ${op("--no-const-segregation")}     Disable ErgoTree constants segregation
         ${op("--no-size-info")}             Don't include size info if ErgoTree version is set to 0
@@ -60,12 +60,17 @@ function ip(...inputs: string[]): string {
   return `${inputs.map((f) => blue(f)).join(" | ")}`;
 }
 
+function arg(flags: string[]): string[][] {
+  return flags.map((f) => f.split(" ").map((x, i) => (i === 0 ? cyan(x) : yellow(x))));
+}
+
 function op(...flags: string[]): string {
-  return `${flags.flatMap((f) => f.split(" ").map((x, i) => (i === 0 ? cyan(x) : yellow(x)))).join(" ")}`;
+  return `${arg(flags)
+    .map((x) => x.join(" "))
+    .join(", ")}`;
 }
 
 function ex(input: string, flags?: string[]): string {
   const e = `${ergoc} ${blue(input)}`;
-
-  return flags ? `${e} ${op(...flags)}` : e;
+  return flags ? `${e} ${arg(flags).flat().join(" ")}` : e;
 }
