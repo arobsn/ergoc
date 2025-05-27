@@ -66,8 +66,8 @@ ergoc ./contract.es
 # Watch mode for development
 ergoc ./contract.es --watch
 
-# Compile with hex encoding (default)
-ergoc ./contract.es --encoding hex
+# Compile with Base58 encoding (Address)
+ergoc ./contract.es --encoding b58
 
 # Compile with base58 address encoding for testnet
 ergoc ./contract.es --encoding base58 --network testnet
@@ -79,24 +79,10 @@ ergoc ./contract.es --ergotree-version 0 --verbose
 ergoc ./contract.es --compact > compiled.hex
 ```
 
-## Output Formats
-
-### Hex Encoding (default)
-Outputs the compiled ErgoTree as a hexadecimal string:
-```
-0008cd03b196b003d24302...
-```
-
-### Base58 Address Encoding
-Outputs a P2S (Pay-to-Script) address that can be used directly:
-```
-2Z4YBkDsDvQj8BX7xiySFewjitqp2ge9c99jfes2whbtKitZTxdBYqbrVZUvZvKv6aqn9by4kp3LE1c26LCyosFnVnm6b6U1JYvks5pNEJEM...
-```
-
 ## Configuration
 
 ### Supported Encodings
-- `hex`, `base16`, `b16` - Hexadecimal output
+- `base16`, `b16`, `hex` - Hexadecimal output (default)
 - `base58`, `b58`, `addr`, `address` - Base58 address output
 
 ### Networks
@@ -109,13 +95,6 @@ Outputs a P2S (Pay-to-Script) address that can be used directly:
 - `0` - Legacy ErgoTree version 0
 
 ## Development
-
-This project is built with:
-
-- **TypeScript** - Type-safe development
-- **Bun** - Fast JavaScript runtime and package manager
-- **Biome** - Fast linting and formatting
-- **Fleet SDK** - Ergo blockchain development toolkit
 
 ### Building from Source
 
