@@ -1,4 +1,4 @@
-# ergoc
+# ergoc [![npm](https://img.shields.io/npm/v/ergoc)](https://www.npmjs.com/package/ergoc)
 
 A modern CLI compiler for ErgoScript, the smart contract language for the [Ergo blockchain](https://ergoplatform.org/en/).
 
@@ -40,7 +40,7 @@ ergoc script.es --compact
 
 ### Command Line Options
 
-```bash
+```
 Usage
   $ ergoc <script-file> [options]
 

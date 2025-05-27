@@ -4,7 +4,14 @@
   "version": "0.1.2",
   "description": "CLI ErgoScript Compiler",
   "author": "Alison Oliveira <arobsn@proton.me>",
-  "repository": "github:arobsn/ergoc",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arobsn/ergoc.git"
+  },
+  "homepage": "https://github.com/arobsn/ergoc#readme",
+  "bugs": {
+    "url": "https://github.com/arobsn/ergoc/issues"
+  },
   "license": "MIT",
   "bin": {
     "ergoc": "bin/cli.js"
