@@ -40,21 +40,21 @@ ergoc script.es --compact
 
 ### Command Line Options
 
-```
+```bash
 Usage
   $ ergoc <script-file> [options]
 
 Options
-  -w, --watch               Watch for script changes
-  -h, --help                Show help
-  -v, --version             Show version
-  -c, --compact             Compact output
-  -e TYPE, --encoding TYPE  ErgoTree output encoding (hex, base58) [default: hex]
-  -n TYPE, --network TYPE   Contract network (mainnet, testnet) [default: mainnet]
-  --ergotree-version        Output Ergotree version (0, 1, latest) [default: latest]
-  --segregate-consts        Segregate output constants [default: true]
-  --no-size-info            Don't include size info if ErgoTree version is set to 0
-  --verbose                 Enable verbose mode, showing additional information
+  -w, --watch                Watch for script changes
+  -h, --help                 Show help
+  -v, --version              Show version
+  -c, --compact              Compact output
+  -e TYPE, --encoding TYPE   ErgoTree output encoding (hex, base58) [default: hex]
+  -n TYPE, --network TYPE    Contract network (mainnet, testnet) [default: mainnet]
+  --ergotree-version NUMBER  Output Ergotree version (0, 1, latest) [default: latest]
+  --no-const-segregation     Disable ErgoTree constants segregation
+  --no-size-info             Don't include size info if ErgoTree version is set to 0
+  --verbose                  Enable verbose mode, showing additional information
 ```
 
 ### Examples
