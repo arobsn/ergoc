@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { extractPlaceholders, splitSource } from "./placeholders";
+import { extractPlaceholders, splitSource } from "./parser";
 
 describe("placeholder extraction", () => {
   it("Should extract placeholders from comment blocks", () => {

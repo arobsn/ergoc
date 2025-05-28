@@ -1,4 +1,4 @@
-type PlaceholderInfo = {
+export type PlaceholderInfo = {
   name: string;
   type: string;
   value?: string;
