@@ -6,8 +6,12 @@ type PlaceholderInfo = {
 };
 
 const PLACEHOLDER_KEYWORD = "@placeholder";
-const COMMENT_LINE_PLACEHOLDER_REGEX =
+
+// @placeholder <name>: <type> [= <value>] [<description>]
+const COMMENT_BLOCK_PLACEHOLDER_REGEX =
   /@placeholder\s+([_\w$]+)\s*:\s*([\w\[\]]+)(?:\s*=\s*([^\s]+))?(?:\s{2,}(.*?))?\s*$/i;
+
+// val <variable-name>: <type> = <name> // @placeholder [description]
 const INLINE_PLACEHOLDER_REGEX =
   /^\s*val\s+\w+\s*:\s*([\w\[\]]+)\s*=\s*([$\w]+)\s*\/\/\s*@placeholder\s*(.*)$/i;
 
@@ -30,7 +34,7 @@ export function extractPlaceholders(source: string): PlaceholderInfo[] {
 }
 
 function matchCommentBlockPlaceholder(line: string): PlaceholderInfo | undefined {
-  const match = line.match(COMMENT_LINE_PLACEHOLDER_REGEX);
+  const match = line.match(COMMENT_BLOCK_PLACEHOLDER_REGEX);
   if (!match) return undefined;
 
   const [, name, type, value, desc] = match;
