@@ -1,20 +1,19 @@
-import { bgRed, blue, green, grey, red, white, yellow } from "kleur/colors";
+import { blue, green, grey, red, white, yellow } from "kleur/colors";
 
-export function task(message: string): void {
-  console.log(yellow("➜"), message);
-}
-
-export function error(message: string): void {
-  console.error(bgRed(white(" ERROR ")), red(message));
-}
-
-export function info(...content: unknown[]): void {
-  console.info(blue("ℹ"), ...content);
-}
-
-export function success(...content: unknown[]): void {
-  console.log(green("✔"), ...content);
-}
+export const log = {
+  task(message: string): void {
+    console.log(yellow("➜"), message);
+  },
+  error(message: string): void {
+    console.error(red("✖ Error:"), red(message));
+  },
+  info(...content: unknown[]): void {
+    console.info(blue("ℹ"), ...content);
+  },
+  success(...content: unknown[]): void {
+    console.log(green("✔"), ...content);
+  }
+};
 
 export function logWatchingUI(): void {
   console.log();

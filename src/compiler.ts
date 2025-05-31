@@ -26,7 +26,7 @@ export function compileScript(
 ): CompilerOutput {
   const startTime = performance.now();
 
-  const encoding = parseEncoding(flags.encoding);
+  const enc = parseEncoding(flags.encoding);
   const version = parseErgoTreeVersion(flags.ergotreeVersion);
   const commonOptions = {
     network: parseNetwork(flags.network),
@@ -51,10 +51,7 @@ export function compileScript(
       log.info(dim("Const segregation "), options.segregateConstants);
       log.info(dim("Size info         "), options.version === 0 ? options.includeSize : true);
       log.info(dim("Network           "), options.network);
-      log.info(
-        dim("Encoding          "),
-        encoding === "base16" ? "base16 (hex)" : "base58 (address)"
-      );
+      log.info(dim("Encoding          "), enc === "base16" ? "base16 (hex)" : "base58 (address)");
     }
   }
 
@@ -63,14 +60,14 @@ export function compileScript(
   const script = readFileSync(filename, "utf-8");
   const tree = compile(script, options);
   const treeBytes = tree.toBytes();
-  const encodedTree = encoding === "base16" ? tree.toHex() : tree.toAddress().encode();
+  const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 
   if (flags.compact) {
     console.log(encodedTree);
   } else {
     log.success(`Done in ${Math.floor(performance.now() - startTime)}ms\n`);
 
-    console.log(dim(encoding === "base16" ? "ErgoTree" : "P2S Address"), size(treeBytes.length));
+    console.log(dim(enc === "base16" ? "ErgoTree" : "P2S Address"), size(treeBytes.length));
     console.log(encodedTree);
   }
 
