@@ -18,7 +18,7 @@ export function buildCli() {
         ${op("-c", "--compact")}              Compact output
         ${op("-e TYPE", "--encoding TYPE")}   ErgoTree output encoding (hex, base58) [default: hex]
         ${op("-n TYPE", "--network TYPE")}    Contract network (mainnet, testnet) [default: mainnet]
-        ${op("--ergotree-version NUMBER")}  Output Ergotree version (0, 1, latest) [default: latest]
+        ${op("--ergotree-version NUMBER")}  Output Ergotree version (0, 1, 2, 3, latest) [default: latest = 2]
         ${op("--no-const-segregation")}     Disable ErgoTree constants segregation
         ${op("--no-size-info")}             Don't include size info if ErgoTree version is set to 0
         ${op("--verbose")}                  Enable verbose mode, showing additional information

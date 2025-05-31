@@ -4,7 +4,7 @@ export const base16Encodings = new Set(["hex", "base16", "b16"]);
 export const base58Encodings = new Set(["base58", "b58", "addr", "address"]);
 export const allEncodings = new Set([...base16Encodings.keys(), ...base58Encodings.keys()]);
 export const networks = new Set(["mainnet", "testnet"]);
-export const ergoTreeVersions = new Set(["0", "1", "latest"]);
+export const ergoTreeVersions = new Set(["0", "1", "2", "3", "latest"]);
 
 export function parseEncoding(encoding: string): "base16" | "base58" {
   if (!allEncodings.has(encoding)) throw new InvalidParameterError(encoding, allEncodings);
@@ -16,8 +16,8 @@ export function parseNetwork(network: string): "mainnet" | "testnet" {
   return network as "mainnet" | "testnet";
 }
 
-export function parseErgoTreeVersion(version: string): 0 | 1 {
+export function parseErgoTreeVersion(version: string): number {
   if (!ergoTreeVersions.has(version)) throw new InvalidParameterError(version, ergoTreeVersions);
-  if (version === "0") return 0;
-  return 1; // "1" or "latest" both map to ErgoTree version 1
+  if (version === "latest") return 2; // 2 is the latest activated ErgoTree version
+  return Number.parseInt(version, 10) as number;
 }

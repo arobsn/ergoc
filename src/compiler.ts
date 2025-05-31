@@ -27,7 +27,7 @@ export function compileScript(
   const startTime = performance.now();
 
   const enc = parseEncoding(flags.encoding);
-  const version = parseErgoTreeVersion(flags.ergotreeVersion);
+  const version = parseErgoTreeVersion(flags.ergotreeVersion) as 0 | 1; // todo: support v2 and v3 in fleet
   const commonOptions = {
     network: parseNetwork(flags.network),
     segregateConstants: flags.constSegregation
