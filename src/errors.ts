@@ -10,6 +10,13 @@ export class ErgoCompilerError extends Error {
 export class FileNotFoundError extends ErgoCompilerError {
   constructor(filename: string) {
     super(`Couldn't find script file: ${filename}`);
-    this.name = "FileNotFoundError";
+  }
+}
+
+export class InvalidParameterError extends ErgoCompilerError {
+  constructor(param: string, validOptions: Set<string>) {
+    super(
+      `Invalid parameter: '${param}'. Valid options are: ${Array.from(validOptions).join(", ")}`
+    );
   }
 }

@@ -2,7 +2,7 @@ import { watch } from "node:fs";
 import { buildCli } from "./cli";
 import { compileScript } from "./compiler";
 import { log, logWatchingUI } from "./console";
-import { FileNotFoundError } from "./errors";
+import { FileNotFoundError, InvalidParameterError } from "./errors";
 
 const cli = buildCli();
 
@@ -33,7 +33,7 @@ function safeCompile(
   try {
     compileScript(cli.input[0] as string, cli.flags, { recompiling });
   } catch (e) {
-    if (e instanceof FileNotFoundError) {
+    if (e instanceof FileNotFoundError || e instanceof InvalidParameterError) {
       log.error(e.message);
       process.exit(1);
     }
