@@ -1,8 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { type CompilerOutput, compile } from "@fleet-sdk/compiler";
 import { cyan, dim } from "kleur/colors";
-import { info, size, success, task } from "./console";
+import { log, size } from "./console";
 import { parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
+import { FileNotFoundError } from "./errors";
 
 export interface CompilerFlags {
   network: string;
@@ -19,7 +20,7 @@ export interface CompileState {
 }
 
 export function compileScript(
-  file: string,
+  filename: string,
   flags: CompilerFlags,
   { recompiling }: CompileState = { recompiling: true }
 ): CompilerOutput {
@@ -43,21 +44,23 @@ export function compileScript(
       action = "Recompiling";
     }
 
-    task(`${action} ${cyan(file)}...`);
+    log.task(`${action} ${cyan(filename)}...`);
 
     if (flags.verbose) {
-      info(dim("ErgoTree version  "), options.version);
-      info(dim("Const segregation "), options.segregateConstants);
-      info(dim("Size info         "), options.version === 0 ? options.includeSize : true);
-      info(dim("Network           "), options.network);
-      info(dim("Encoding          "), encoding === "base16" ? "base16 (hex)" : "base58 (address)");
+      log.info(dim("ErgoTree version  "), options.version);
+      log.info(dim("Const segregation "), options.segregateConstants);
+      log.info(dim("Size info         "), options.version === 0 ? options.includeSize : true);
+      log.info(dim("Network           "), options.network);
+      log.info(
+        dim("Encoding          "),
+        encoding === "base16" ? "base16 (hex)" : "base58 (address)"
+      );
     }
   }
 
-  if (!existsSync(file)) throw new Error(`Couldn't not find script file: ${file}`);
+  if (!existsSync(filename)) throw new FileNotFoundError(filename);
 
-  const script = readFileSync(file, "utf-8");
-
+  const script = readFileSync(filename, "utf-8");
   const tree = compile(script, options);
   const treeBytes = tree.toBytes();
   const encodedTree = encoding === "base16" ? tree.toHex() : tree.toAddress().encode();
@@ -65,7 +68,7 @@ export function compileScript(
   if (flags.compact) {
     console.log(encodedTree);
   } else {
-    success(`Done in ${Math.floor(performance.now() - startTime)}ms\n`);
+    log.success(`Done in ${Math.floor(performance.now() - startTime)}ms\n`);
 
     console.log(dim(encoding === "base16" ? "ErgoTree" : "P2S Address"), size(treeBytes.length));
     console.log(encodedTree);

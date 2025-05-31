@@ -1,7 +1,8 @@
 import { watch } from "node:fs";
 import { buildCli } from "./cli";
 import { compileScript } from "./compiler";
-import { error, logWatchingUI } from "./console";
+import { log, logWatchingUI } from "./console";
+import { FileNotFoundError } from "./errors";
 
 const cli = buildCli();
 
@@ -32,7 +33,12 @@ function safeCompile(
   try {
     compileScript(cli.input[0] as string, cli.flags, { recompiling });
   } catch (e) {
-    error(String(e));
+    if (e instanceof FileNotFoundError) {
+      log.error(e.message);
+      process.exit(1);
+    }
+
+    log.error(e instanceof Error ? e.message : String(e));
     if (exitOnError) process.exit(1);
   }
 
