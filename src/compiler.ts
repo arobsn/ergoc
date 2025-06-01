@@ -1,31 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
-import { type CompilerOutput, compile } from "@fleet-sdk/compiler";
-import { blue, cyan, dim, yellow, magenta, green } from "kleur/colors";
-import { log, size } from "./console";
-import { parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
-import { FileNotFoundError } from "./errors";
+import { type CompilerOutput, compile as build } from "@fleet-sdk/compiler";
 import { hex } from "@fleet-sdk/crypto";
+import { blue, cyan, dim, green, magenta, yellow } from "picocolors";
+import { log, size } from "./console";
+import { FileNotFoundError, InvalidParameterError } from "./errors";
+import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 
-export interface CompilerFlags {
-  network: string;
-  ergotreeVersion: string;
-  constSegregation: boolean;
-  sizeInfo: boolean;
-  encoding: string;
-  compact: boolean;
-  verbose: boolean;
-  watch: boolean;
-}
-
-export interface CompileState {
-  recompiling: boolean;
-}
-
-export function compileScript(
-  filename: string,
-  flags: CompilerFlags,
-  { recompiling }: CompileState = { recompiling: true }
-): CompilerOutput {
+export function compileScript(filename: string, flags: CompilerFlags): CompilerOutput {
   const startTime = performance.now();
 
   const enc = parseEncoding(flags.encoding);
@@ -40,9 +21,7 @@ export function compileScript(
       : { version, ...commonOptions };
 
   if (!flags.compact) {
-    if (flags.watch) console.clear();
-
-    log.task(`${recompiling ? "Recompiling" : "Compiling"} ${cyan(filename)}...`);
+    log.task(`Compiling ${cyan(filename)}...`);
     if (flags.verbose) {
       log.info(dim("ErgoTree version  "), options.version);
       log.info(dim("Const segregation "), options.segregateConstants);
@@ -55,7 +34,7 @@ export function compileScript(
   if (!existsSync(filename)) throw new FileNotFoundError(filename);
 
   const script = readFileSync(filename, "utf-8");
-  const tree = compile(script, options);
+  const tree = build(script, options);
   const treeBytes = tree.toBytes();
   const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 
@@ -144,4 +123,22 @@ function logConstants(constants: FormattedConst[], flags: CompilerFlags): void {
 
 function logConstant(i: string, type: string, data: unknown, iPad: number, tPad: number): void {
   console.log(`${`[${yellow(i.padStart(iPad))}]:`} ${magenta(type.padEnd(tPad))} =`, data);
+}
+
+export function compile(
+  input: string,
+  flags: CompilerFlags,
+  { exitOnError } = { exitOnError: true }
+): void {
+  try {
+    compileScript(input as string, flags);
+  } catch (e) {
+    if (e instanceof FileNotFoundError || e instanceof InvalidParameterError) {
+      log.error(e.message);
+      process.exit(1);
+    }
+
+    log.error(e instanceof Error ? e.message : String(e));
+    if (exitOnError) process.exit(1);
+  }
 }

@@ -1,5 +1,5 @@
-import { blue, bold, cyan, green, yellow } from "kleur/colors";
 import meow from "meow";
+import { blue, bold, cyan, green, yellow } from "picocolors";
 import { description, version } from "../package.json";
 
 export function buildCli() {

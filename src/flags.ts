@@ -21,3 +21,14 @@ export function parseErgoTreeVersion(version: string): number {
   if (version === "latest") return 2; // 2 is the latest activated ErgoTree version
   return Number.parseInt(version, 10) as number;
 }
+
+export interface CompilerFlags {
+  network: string;
+  ergotreeVersion: string;
+  constSegregation: boolean;
+  sizeInfo: boolean;
+  encoding: string;
+  compact: boolean;
+  verbose: boolean;
+  watch: boolean;
+}

@@ -1,4 +1,4 @@
-import { blue, green, grey, red, white, yellow } from "kleur/colors";
+import { blue, green, red, yellow } from "picocolors";
 
 export const log = {
   task(message: string): void {
@@ -14,12 +14,6 @@ export const log = {
     console.log(green("✔"), ...content);
   }
 };
-
-export function logWatchingUI(): void {
-  console.log();
-  console.log(green("Waiting for changes..."));
-  console.log(grey(`Press ${white("Ctrl+C")} to exit`));
-}
 
 const MAX_TREE_SIZE = 4_096;
 const EIGHTY_PERCENT_OF_MAX_TREE_SIZE = (MAX_TREE_SIZE * 80) / 100;
