@@ -1,4 +1,4 @@
-import { blue, dim, green, magenta, red, yellow } from "picocolors";
+import { blue, dim, green, magenta, red, white, yellow } from "picocolors";
 import { formatData, isNumberRelevant, isNumeric } from "./data";
 
 export type ParsedConstants = [string, string, unknown];
@@ -26,7 +26,7 @@ export const log = {
   title(title: string, tag: string) {
     this.nl();
     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-    console.log(dim("➜"), dim(title), tag);
+    console.log(green("➜"), white(title), tag);
     return this;
   },
   nl() {
