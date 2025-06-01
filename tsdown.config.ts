@@ -4,6 +4,5 @@ export default defineConfig({
   entry: "src/index.ts",
   outDir: "dist",
   format: "esm",
-  minify: true,
-  noExternal: ["meow", "kleur", "@fleet-sdk/compiler"]
+  minify: true
 });

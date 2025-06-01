@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "ergoc",
+      "dependencies": {
+        "@fleet-sdk/crypto": "^0.9.1",
+      },
       "devDependencies": {
         "@biomejs/biome": "^1.9.4",
         "@fleet-sdk/compiler": "^0.8.5",
@@ -58,7 +61,7 @@
 
     "@fleet-sdk/core": ["@fleet-sdk/core@0.8.5", "", { "dependencies": { "@fleet-sdk/common": "^0.8.5", "@fleet-sdk/crypto": "^0.8.5", "@fleet-sdk/serializer": "^0.8.5" } }, "sha512-YKnjmPLstLWsCpih9LxpqMH05/+EtDK8KRW9AAzRgxTIpPNArrXYrYDMSWfC7sFgKRxJVM9AWHYubKMcWYlRDA=="],
 
-    "@fleet-sdk/crypto": ["@fleet-sdk/crypto@0.8.5", "", { "dependencies": { "@fleet-sdk/common": "^0.8.5", "@noble/hashes": "^1.8.0", "@scure/base": "^1.2.5" } }, "sha512-EQ+xdDZLXtXeFZb1507ugc+LM9LLTVMsnrA8s0u/78VRikdt3doKwNvD0Ycno7JXo1hAMu0R6T1o/zoafXcmtQ=="],
+    "@fleet-sdk/crypto": ["@fleet-sdk/crypto@0.9.1", "", { "dependencies": { "@fleet-sdk/common": "^0.9.1", "@noble/hashes": "^1.8.0", "@scure/base": "^1.2.5" } }, "sha512-ULz/7IgOxlW4hkD7bdYuOGVyLkp4qf9B7Rm6kZgmjRl6qmTlb72QDDjGOiIrMoKONdcPXrvaAYv9F8q8PQQW1A=="],
 
     "@fleet-sdk/serializer": ["@fleet-sdk/serializer@0.8.5", "", { "dependencies": { "@fleet-sdk/common": "^0.8.5", "@fleet-sdk/crypto": "^0.8.5" } }, "sha512-TaF1owAcfYMpLFWtI1lP4boq042+7+fxqrkUd+dh5Feh+4ke8y8/2mMXca01PQuBTkML1Gq1CFouyZXo+J2V4w=="],
 
@@ -187,6 +190,14 @@
     "unconfig": ["unconfig@7.3.2", "", { "dependencies": { "@quansync/fs": "^0.1.1", "defu": "^6.1.4", "jiti": "^2.4.2", "quansync": "^0.2.8" } }, "sha512-nqG5NNL2wFVGZ0NA/aCFw0oJ2pxSf1lwg4Z5ill8wd7K4KX/rQbHlwbh+bjctXL5Ly1xtzHenHGOK0b+lG6JVg=="],
 
     "undici-types": ["undici-types@6.21.0", "", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
+
+    "@fleet-sdk/compiler/@fleet-sdk/crypto": ["@fleet-sdk/crypto@0.8.5", "", { "dependencies": { "@fleet-sdk/common": "^0.8.5", "@noble/hashes": "^1.8.0", "@scure/base": "^1.2.5" } }, "sha512-EQ+xdDZLXtXeFZb1507ugc+LM9LLTVMsnrA8s0u/78VRikdt3doKwNvD0Ycno7JXo1hAMu0R6T1o/zoafXcmtQ=="],
+
+    "@fleet-sdk/core/@fleet-sdk/crypto": ["@fleet-sdk/crypto@0.8.5", "", { "dependencies": { "@fleet-sdk/common": "^0.8.5", "@noble/hashes": "^1.8.0", "@scure/base": "^1.2.5" } }, "sha512-EQ+xdDZLXtXeFZb1507ugc+LM9LLTVMsnrA8s0u/78VRikdt3doKwNvD0Ycno7JXo1hAMu0R6T1o/zoafXcmtQ=="],
+
+    "@fleet-sdk/crypto/@fleet-sdk/common": ["@fleet-sdk/common@0.9.1", "", {}, "sha512-AUKYRFbC7L0v6ndyh6gZJ8yKg1HifIbtQgw3FsrjvVEYQjA4LfVJneJqxOfstAVZqLhX8nEhW3qMrQHnLQL26Q=="],
+
+    "@fleet-sdk/serializer/@fleet-sdk/crypto": ["@fleet-sdk/crypto@0.8.5", "", { "dependencies": { "@fleet-sdk/common": "^0.8.5", "@noble/hashes": "^1.8.0", "@scure/base": "^1.2.5" } }, "sha512-EQ+xdDZLXtXeFZb1507ugc+LM9LLTVMsnrA8s0u/78VRikdt3doKwNvD0Ycno7JXo1hAMu0R6T1o/zoafXcmtQ=="],
 
     "sigmajs-crypto-facade/@noble/hashes": ["@noble/hashes@1.1.4", "", {}, "sha512-+PYsVPrTSqtVjatKt2A/Proukn2Yrz61OBThOCKErc5w2/r1Fh37vbDv0Eah7pyNltrmacjwTvdw3JoR+WE4TA=="],
 

@@ -1,9 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { type CompilerOutput, compile } from "@fleet-sdk/compiler";
-import { cyan, dim } from "kleur/colors";
+import { blue, cyan, dim, yellow, magenta, green } from "kleur/colors";
 import { log, size } from "./console";
 import { parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 import { FileNotFoundError } from "./errors";
+import { hex } from "@fleet-sdk/crypto";
 
 export interface CompilerFlags {
   network: string;
@@ -13,6 +14,7 @@ export interface CompilerFlags {
   encoding: string;
   compact: boolean;
   verbose: boolean;
+  watch: boolean;
 }
 
 export interface CompileState {
@@ -38,14 +40,9 @@ export function compileScript(
       : { version, ...commonOptions };
 
   if (!flags.compact) {
-    let action = "Compiling";
-    if (recompiling) {
-      console.clear();
-      action = "Recompiling";
-    }
+    if (flags.watch) console.clear();
 
-    log.task(`${action} ${cyan(filename)}...`);
-
+    log.task(`${recompiling ? "Recompiling" : "Compiling"} ${cyan(filename)}...`);
     if (flags.verbose) {
       log.info(dim("ErgoTree version  "), options.version);
       log.info(dim("Const segregation "), options.segregateConstants);
@@ -69,7 +66,82 @@ export function compileScript(
 
     console.log(dim(enc === "base16" ? "ErgoTree" : "P2S Address"), size(treeBytes.length));
     console.log(encodedTree);
+    console.log();
+
+    if (flags.constSegregation) {
+      const formattedConsts: FormattedConst[] = [];
+      let i = 0;
+      for (const constant of tree.constants) {
+        formattedConsts.push([i.toString(), constant.tpe.name, constant.data]);
+        i++;
+      }
+
+      logConstants(formattedConsts, flags);
+    }
   }
 
   return tree;
+}
+
+function formatData(data: unknown, type: string): unknown {
+  if (data === undefined || data === null) return yellow("null");
+  if (type === "Coll[Byte]") return green(hex.encode(Uint8Array.from(data as number[])));
+  if (isNumeric(data)) return yellow(data.toString());
+  return data;
+}
+
+function isNumeric(val: unknown): val is number | bigint {
+  const type = typeof val;
+  return type === "number" || type === "bigint";
+}
+
+function isNumberRelevant(val: number | bigint): boolean {
+  const t = typeof val;
+  let n: number;
+
+  if (t === "number") {
+    n = val as number;
+  } else if (t === "bigint") {
+    n = Number(val as bigint);
+  } else {
+    return false; // Unsupported type
+  }
+
+  return n >= 5 || n < 0;
+}
+
+type FormattedConst = [string, string, unknown];
+
+function logConstants(constants: FormattedConst[], flags: CompilerFlags): void {
+  const toLog = flags.verbose
+    ? constants
+    : constants.filter(([_i, type, data]) => {
+        if (isNumeric(data)) return isNumberRelevant(data as number | bigint);
+        if (type === "Boolean") return data === false;
+        return true; // Log all other types
+      });
+
+  const logCountDisplay = flags.verbose
+    ? toLog.length.toString()
+    : `${toLog.length} ${dim(`out of ${constants.length}`)}`;
+
+  const title = flags.verbose ? "Constants" : "Relevant Constants";
+
+  console.log(dim(title), blue(logCountDisplay));
+
+  if (toLog.length === 0) {
+    console.log(dim(flags.verbose ? "No constants found" : "No relevant constants found"));
+    return;
+  }
+
+  const maxIndexLen = Math.max(...toLog.map(([i]) => i.length));
+  const maxTypeLen = Math.max(...toLog.map(([_i, type]) => type.length));
+
+  for (const [i, type, data] of toLog) {
+    logConstant(i, type, formatData(data, type), maxIndexLen, maxTypeLen);
+  }
+}
+
+function logConstant(i: string, type: string, data: unknown, iPad: number, tPad: number): void {
+  console.log(`${`[${yellow(i.padStart(iPad))}]:`} ${magenta(type.padEnd(tPad))} =`, data);
 }
