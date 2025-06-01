@@ -31,7 +31,7 @@
       },
       "suspicious": {
         "recommended": true,
-        "noConsoleLog": "off",
+        "noConsoleLog": "error",
         "noAssignInExpressions": "off"
       }
     }

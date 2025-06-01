@@ -2,6 +2,9 @@ import { watch as fileWatch } from "node:fs";
 import { gray, green, white } from "picocolors";
 import { compile } from "./compiler";
 import type { CompilerFlags } from "./flags";
+import { log } from "./logger";
+
+const EXIT_ON_ERROR = true;
 
 export async function watch(filename: string, flags: CompilerFlags) {
   watchCompile(filename, flags);
@@ -27,14 +30,15 @@ export async function watch(filename: string, flags: CompilerFlags) {
 
 function watchCompile(filename: string, flags: CompilerFlags) {
   console.clear();
-  compile(filename, flags, { exitOnError: false });
+  compile(filename, flags, EXIT_ON_ERROR);
   logWatchingUI(flags);
 }
 
 function logWatchingUI(flags: CompilerFlags): void {
   if (flags.compact) return;
 
-  console.log();
-  console.log(green("Waiting for changes..."));
-  console.log(gray(`Press ${white("Ctrl+C")} to exit`));
+  log
+    .nl()
+    .content(green("Waiting for changes..."))
+    .content(gray(`Press ${white("Ctrl+C")} to exit`));
 }

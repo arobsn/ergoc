@@ -1,12 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
-import { type CompilerOutput, compile as build } from "@fleet-sdk/compiler";
-import { blue, cyan, dim, magenta, yellow } from "picocolors";
-import { formatData, formatSize, isNumberRelevant, isNumeric } from "./data";
+import { compile as build } from "@fleet-sdk/compiler";
+import { cyan, dim } from "picocolors";
+import { formatSize } from "./data";
 import { FileNotFoundError, InvalidParameterError } from "./errors";
 import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
-import { log } from "./logger";
+import { type ParsedConstants, log } from "./logger";
 
-export function compileScript(filename: string, flags: CompilerFlags): CompilerOutput {
+export function compileScript(filename: string, flags: CompilerFlags): void {
   const startTime = performance.now();
 
   const enc = parseEncoding(flags.encoding);
@@ -22,12 +22,14 @@ export function compileScript(filename: string, flags: CompilerFlags): CompilerO
 
   if (!flags.compact) {
     log.task(`Compiling ${cyan(filename)}...`);
+
     if (flags.verbose) {
-      log.info(dim("ErgoTree version  "), options.version);
-      log.info(dim("Const segregation "), options.segregateConstants);
-      log.info(dim("Size info         "), options.version === 0 ? options.includeSize : true);
-      log.info(dim("Network           "), options.network);
-      log.info(dim("Encoding          "), enc === "base16" ? "base16 (hex)" : "base58 (address)");
+      log
+        .info(dim("ErgoTree version  "), options.version)
+        .info(dim("Const segregation "), options.segregateConstants)
+        .info(dim("Size info         "), options.version === 0 ? options.includeSize : true)
+        .info(dim("Network           "), options.network)
+        .info(dim("Encoding          "), enc === "base16" ? "base16 (hex)" : "base58 (address)");
     }
   }
 
@@ -39,70 +41,30 @@ export function compileScript(filename: string, flags: CompilerFlags): CompilerO
   const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 
   if (flags.compact) {
-    console.log(encodedTree);
-  } else {
-    log.success(`Done in ${Math.floor(performance.now() - startTime)}ms\n`);
-
-    console.log(dim(enc === "base16" ? "ErgoTree" : "P2S Address"), formatSize(treeBytes.length));
-    console.log(encodedTree);
-    console.log();
-
-    if (flags.constSegregation) {
-      const formattedConsts: FormattedConst[] = [];
-      let i = 0;
-      for (const constant of tree.constants) {
-        formattedConsts.push([i.toString(), constant.tpe.name, constant.data]);
-        i++;
-      }
-
-      logConstants(formattedConsts, flags);
-    }
-  }
-
-  return tree;
-}
-
-type FormattedConst = [string, string, unknown];
-
-function logConstants(constants: FormattedConst[], flags: CompilerFlags): void {
-  const toLog = flags.verbose
-    ? constants
-    : constants.filter(([_i, type, data]) => {
-        if (isNumeric(data)) return isNumberRelevant(data as number | bigint);
-        if (type === "Boolean") return data === false;
-        return true; // Log all other types
-      });
-
-  const logCountDisplay = flags.verbose
-    ? toLog.length.toString()
-    : `${toLog.length} ${dim(`out of ${constants.length}`)}`;
-
-  const title = flags.verbose ? "Constants" : "Relevant Constants";
-
-  console.log(dim(title), blue(logCountDisplay));
-
-  if (toLog.length === 0) {
-    console.log(dim(flags.verbose ? "No constants found" : "No relevant constants found"));
+    log.content(encodedTree);
     return;
   }
 
-  const maxIndexLen = Math.max(...toLog.map(([i]) => i.length));
-  const maxTypeLen = Math.max(...toLog.map(([_i, type]) => type.length));
+  log
+    .success(`Done in ${Math.floor(performance.now() - startTime)}ms`)
+    .nl()
+    .title(enc === "base16" ? "ErgoTree" : "P2S Address", formatSize(treeBytes.length))
+    .content(encodedTree)
+    .nl();
 
-  for (const [i, type, data] of toLog) {
-    logConstant(i, type, formatData(data, type), maxIndexLen, maxTypeLen);
+  if (flags.constSegregation) {
+    const consts: ParsedConstants[] = [];
+    let i = 0;
+    for (const constant of tree.constants) {
+      consts.push([i.toString(), constant.tpe.name, constant.data]);
+      i++;
+    }
+
+    log.constants(consts, flags.verbose);
   }
 }
 
-function logConstant(i: string, type: string, data: unknown, iPad: number, tPad: number): void {
-  console.log(`${`[${yellow(i.padStart(iPad))}]:`} ${magenta(type.padEnd(tPad))} =`, data);
-}
-
-export function compile(
-  input: string,
-  flags: CompilerFlags,
-  { exitOnError } = { exitOnError: true }
-): void {
+export function compile(input: string, flags: CompilerFlags, exitOnError = true): void {
   try {
     compileScript(input as string, flags);
   } catch (e) {
