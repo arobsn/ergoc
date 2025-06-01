@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { type CompilerOutput, compile as build } from "@fleet-sdk/compiler";
-import { hex } from "@fleet-sdk/crypto";
-import { blue, cyan, dim, green, magenta, yellow } from "picocolors";
-import { log, size } from "./console";
+import { blue, cyan, dim, magenta, yellow } from "picocolors";
+import { formatData, formatSize, isNumberRelevant, isNumeric } from "./data";
 import { FileNotFoundError, InvalidParameterError } from "./errors";
 import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
+import { log } from "./logger";
 
 export function compileScript(filename: string, flags: CompilerFlags): CompilerOutput {
   const startTime = performance.now();
@@ -43,7 +43,7 @@ export function compileScript(filename: string, flags: CompilerFlags): CompilerO
   } else {
     log.success(`Done in ${Math.floor(performance.now() - startTime)}ms\n`);
 
-    console.log(dim(enc === "base16" ? "ErgoTree" : "P2S Address"), size(treeBytes.length));
+    console.log(dim(enc === "base16" ? "ErgoTree" : "P2S Address"), formatSize(treeBytes.length));
     console.log(encodedTree);
     console.log();
 
@@ -60,33 +60,6 @@ export function compileScript(filename: string, flags: CompilerFlags): CompilerO
   }
 
   return tree;
-}
-
-function formatData(data: unknown, type: string): unknown {
-  if (data === undefined || data === null) return yellow("null");
-  if (type === "Coll[Byte]") return green(hex.encode(Uint8Array.from(data as number[])));
-  if (isNumeric(data)) return yellow(data.toString());
-  return data;
-}
-
-function isNumeric(val: unknown): val is number | bigint {
-  const type = typeof val;
-  return type === "number" || type === "bigint";
-}
-
-function isNumberRelevant(val: number | bigint): boolean {
-  const t = typeof val;
-  let n: number;
-
-  if (t === "number") {
-    n = val as number;
-  } else if (t === "bigint") {
-    n = Number(val as bigint);
-  } else {
-    return false; // Unsupported type
-  }
-
-  return n >= 5 || n < 0;
 }
 
 type FormattedConst = [string, string, unknown];
