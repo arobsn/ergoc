@@ -47,10 +47,8 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
 
   log
     .success(`Done in ${Math.floor(performance.now() - startTime)}ms`)
-    .nl()
     .title(enc === "base16" ? "ErgoTree" : "P2S Address", formatSize(treeBytes.length))
-    .content(encodedTree)
-    .nl();
+    .content(encodedTree);
 
   if (flags.constSegregation) {
     const consts: ParsedConstants[] = [];
