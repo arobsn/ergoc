@@ -4,7 +4,7 @@ import { compile } from "./compiler";
 import type { CompilerFlags } from "./flags";
 import { log } from "./logger";
 
-const EXIT_ON_ERROR = true;
+const EXIT_ON_ERROR = false;
 
 export async function watch(filename: string, flags: CompilerFlags) {
   watchCompile(filename, flags);
