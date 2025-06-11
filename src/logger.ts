@@ -24,9 +24,13 @@ export const log = {
   },
 
   title(title: string, tag: string) {
-    this.nl();
     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
     console.log(green("➜"), white(title), tag);
+    return this;
+  },
+  subtitle(title: string, tag: string) {
+    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+    console.log(magenta("➜"), white(title), tag);
     return this;
   },
   nl() {

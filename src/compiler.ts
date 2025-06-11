@@ -1,10 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
-import { compile as build } from "@fleet-sdk/compiler";
+import { blake2b256, hex } from "@fleet-sdk/crypto";
 import { cyan, dim } from "picocolors";
 import { formatSize } from "./data";
 import { FileNotFoundError, InvalidParameterError } from "./errors";
 import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 import { type ParsedConstants, log } from "./logger";
+
+// import the compiler dynamically to avoid loading it when not needed
+const { compile: esCompile } = await import("@fleet-sdk/compiler");
 
 export function compileScript(filename: string, flags: CompilerFlags): void {
   const startTime = performance.now();
@@ -36,7 +39,7 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
   if (!existsSync(filename)) throw new FileNotFoundError(filename);
 
   const script = readFileSync(filename, "utf-8");
-  const tree = build(script, options);
+  const tree = esCompile(script, options);
   const treeBytes = tree.toBytes();
   const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 
@@ -47,10 +50,30 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
 
   log
     .success(`Done in ${Math.floor(performance.now() - startTime)}ms`)
+    .nl()
     .title(enc === "base16" ? "ErgoTree" : "P2S Address", formatSize(treeBytes.length))
-    .content(encodedTree);
+    .content(encodedTree)
+    .nl();
+
+  if (flags.verbose) {
+    log
+      .subtitle("Contract Hash", dim("blake2b256"))
+      .content(hex.encode(blake2b256(treeBytes)))
+      .nl();
+  }
 
   if (flags.constSegregation) {
+    if (flags.verbose) {
+      const template = tree.template.toBytes();
+      log
+        .title("Template", formatSize(template.length))
+        .content(hex.encode(template))
+        .nl()
+        .subtitle("Template Hash", dim("blake2b256"))
+        .content(hex.encode(blake2b256(template)))
+        .nl();
+    }
+
     const consts: ParsedConstants[] = [];
     let i = 0;
     for (const constant of tree.constants) {
@@ -58,7 +81,7 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
       i++;
     }
 
-    log.constants(consts, flags.verbose);
+    log.constants(consts, flags.verbose).nl();
   }
 }
 
