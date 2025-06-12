@@ -8,6 +8,7 @@
    // non-bytes coll are flattened
    val prices = Coll(1000000L, 2000000L, 3000000L);
    val prices2 = Coll(100, 200, 300);
+   val test = fromBase16("");
 
    // tuples are flattened
    val pricesTuple = (true, 50L);
@@ -19,5 +20,5 @@
    val price2: Short = 1;
 
    // use constants to get it over compiler optimizations
-   sigmaProp(price > prices(0) || price > pricesTuple._2 || byteColl == nestedColl(0) || byteColl == nestedColl(1) || price2 == pricesTuple2._2 || price2 > prices(0));
+   sigmaProp(price > prices(0) || price > pricesTuple._2 || byteColl == nestedColl(0) || byteColl == nestedColl(1) || price2 == pricesTuple2._2 || price2 > prices(0) || nestedColl(1) == test);
 }

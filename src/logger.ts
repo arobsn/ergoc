@@ -49,6 +49,7 @@ export const log = {
       ? constants
       : constants.filter(([_i, type, data]) => {
           if (isNumeric(data)) return isNumberRelevant(data as number | bigint);
+          if (Array.isArray(data)) return data.length > 0;
           if (type === "Boolean") return data === false;
           return true; // Log all other types
         });

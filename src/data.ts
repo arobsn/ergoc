@@ -1,5 +1,5 @@
 import { hex } from "@fleet-sdk/crypto";
-import { green, red, yellow } from "picocolors";
+import { green, red, white, yellow } from "picocolors";
 
 const MAX_TREE_SIZE = 4_096;
 const EIGHTY_PERCENT_OF_MAX_TREE_SIZE = (MAX_TREE_SIZE * 80) / 100;
@@ -27,8 +27,11 @@ function formatBytes(bytes: number, decimals = 2) {
 
 export function formatData(data: unknown, type: string): unknown {
   if (data === undefined || data === null) return yellow("null");
-  if (type === "Coll[Byte]") return green(hex.encode(Uint8Array.from(data as number[])));
   if (isNumeric(data)) return yellow(data.toString());
+  if (type === "Coll[Byte]" && Array.isArray(data)) {
+    return data.length ? green(hex.encode(Uint8Array.from(data))) : yellow("[Empty]");
+  }
+
   return data;
 }
 
