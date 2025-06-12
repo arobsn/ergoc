@@ -1,5 +1,5 @@
 import { hex } from "@fleet-sdk/crypto";
-import { green, red, white, yellow } from "picocolors";
+import { green, red, yellow } from "picocolors";
 
 const MAX_TREE_SIZE = 4_096;
 const EIGHTY_PERCENT_OF_MAX_TREE_SIZE = (MAX_TREE_SIZE * 80) / 100;
