@@ -1,6 +1,6 @@
 import { buildCli } from "./cli";
-import { watch } from "./watcher";
 import { compile } from "./compiler";
+import { watch } from "./watcher";
 
 const cli = buildCli();
 

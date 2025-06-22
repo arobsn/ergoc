@@ -1,8 +1,8 @@
+import { describe, expect, it, test } from "bun:test";
 import { ErgoAddress, Network } from "@fleet-sdk/core";
 import { hex } from "@fleet-sdk/crypto";
 import { Value$ } from "sigmastate-js/main";
-import { describe, expect, it, test } from "bun:test";
-import { type CompilerOptions, compile, COMPILER_DEFAULTS } from "./compiler";
+import { COMPILER_DEFAULTS, type CompilerOptions, compile } from "./compiler";
 
 const compilerTestVectors: {
   name: string;
