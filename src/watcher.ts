@@ -10,10 +10,9 @@ export async function watch(filename: string, flags: CompilerFlags) {
   watchCompile(filename, flags);
 
   if (flags.watch) {
-    const watcher = fileWatch(filename as string, (e) => {
+    const watcher = fileWatch(filename as string, async (e) => {
       if (e !== "change") return;
-
-      watchCompile(filename, flags);
+      await watchCompile(filename, flags);
     });
 
     // Prevent watcher leak by handling process exit and uncaught exceptions
@@ -28,9 +27,9 @@ export async function watch(filename: string, flags: CompilerFlags) {
   }
 }
 
-function watchCompile(filename: string, flags: CompilerFlags) {
+async function watchCompile(filename: string, flags: CompilerFlags) {
   console.clear();
-  compile(filename, flags, EXIT_ON_ERROR);
+  await compile(filename, flags, EXIT_ON_ERROR);
   logWatchingUI(flags);
 }
 

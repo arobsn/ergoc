@@ -28,8 +28,8 @@ function formatBytes(bytes: number, decimals = 2) {
 export function formatData(data: unknown, type: string): unknown {
   if (data === undefined || data === null) return yellow("null");
   if (isNumeric(data)) return yellow(data.toString());
-  if (type === "Coll[Byte]" && Array.isArray(data)) {
-    return data.length ? green(hex.encode(Uint8Array.from(data))) : yellow("[Empty]");
+  if (type === "Coll[Byte]" && data instanceof Uint8Array) {
+    return data.length ? green(hex.encode(data)) : yellow("[Empty]");
   }
 
   return data;

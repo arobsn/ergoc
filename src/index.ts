@@ -10,5 +10,5 @@ const filename = cli.input[0] as string;
 if (cli.flags.watch) {
   await watch(filename, cli.flags);
 } else {
-  compile(filename, cli.flags);
+  await compile(filename, cli.flags);
 }

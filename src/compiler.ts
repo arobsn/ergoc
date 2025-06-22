@@ -6,12 +6,13 @@ import { FileNotFoundError, InvalidParameterError } from "./errors";
 import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 import { type ParsedConstants, log } from "./logger";
 
-// import the compiler dynamically to avoid loading it when not needed
-const { compile: esCompile } = await import("@fleet-sdk/compiler");
+// import the compiler dynamically to avoid loading it when not necessary
+const getSigmaCompiler = () => import("./sigma/compiler");
 
-export function compileScript(filename: string, flags: CompilerFlags): void {
+export async function compileScript(filename: string, flags: CompilerFlags): Promise<void> {
   const startTime = performance.now();
 
+  const sigmaCompiler = await getSigmaCompiler();
   const enc = parseEncoding(flags.encoding);
   const version = parseErgoTreeVersion(flags.ergotreeVersion) as 0 | 1; // todo: support v2 and v3 in fleet
   const commonOptions = {
@@ -39,8 +40,8 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
   if (!existsSync(filename)) throw new FileNotFoundError(filename);
 
   const script = readFileSync(filename, "utf-8");
-  const tree = esCompile(script, options);
-  const treeBytes = tree.toBytes();
+  const tree = sigmaCompiler.compile(script, options);
+  const treeBytes = tree.bytes;
   const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 
   if (flags.compact) {
@@ -64,7 +65,7 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
 
   if (flags.constSegregation) {
     if (flags.verbose) {
-      const template = tree.template.toBytes();
+      const template = tree.template;
       log
         .title("Template", formatSize(template.length))
         .content(hex.encode(template))
@@ -76,8 +77,9 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
 
     const consts: ParsedConstants[] = [];
     let i = 0;
+
     for (const constant of tree.constants) {
-      consts.push([i.toString(), constant.tpe.name, constant.data]);
+      consts.push([i.toString(), scapeTypeName(constant.type.toString()), constant.data]);
       i++;
     }
 
@@ -85,9 +87,20 @@ export function compileScript(filename: string, flags: CompilerFlags): void {
   }
 }
 
-export function compile(input: string, flags: CompilerFlags, exitOnError = true): void {
+function scapeTypeName(typeName: string): string {
+  return typeName.replace(
+    /S(BigInt|Bool|Byte|GroupElement|Int|Long|Short|Coll|Tuple|SigmaProp)/g,
+    (_, key) => key.replace("S", "") // remove leading 'S' from type names
+  );
+}
+
+export async function compile(
+  input: string,
+  flags: CompilerFlags,
+  exitOnError = true
+): Promise<void> {
   try {
-    compileScript(input as string, flags);
+    await compileScript(input as string, flags);
   } catch (e) {
     if (e instanceof FileNotFoundError || e instanceof InvalidParameterError) {
       log.error(e.message);
