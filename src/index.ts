@@ -1,6 +1,6 @@
 import { buildCli } from "./cli";
-import { compile } from "./compiler";
 import { watch } from "./watcher";
+import { compile } from "./compiler";
 
 const cli = buildCli();
 
@@ -10,5 +10,5 @@ const filename = cli.input[0] as string;
 if (cli.flags.watch) {
   await watch(filename, cli.flags);
 } else {
-  compile(filename, cli.flags);
+  await compile(filename, cli.flags);
 }
