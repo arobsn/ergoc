@@ -33,7 +33,7 @@
     "meow": "^13.2.0",
     "picocolors": "^1.1.1",
     "sigmastate-js": "0.4.2-snapshot.df430e899",
-    "tsdown": "^0.12.8",
+    "tsdown": "^0.12.9",
     "typescript": "^5.8.3"
   },
   "files": [
