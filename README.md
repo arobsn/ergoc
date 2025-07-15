@@ -79,6 +79,35 @@ ergoc ./contract.es --ergotree-version 0 --verbose
 ergoc ./contract.es --compact > compiled.hex
 ```
 
+# Constant placeholders
+
+ergoc introduces the `@placeholder` keyword as a convention to detect placeholders. This keyword must always be declared inside comments in only two specific cases: as part of a variable declaration or within comment lines or blocks.
+
+1. ### Inline variable declaration
+   **Pattern**: `val <variable-name>: <type> = <name> // @placeholder [description]`
+   - **Example**:
+     ```scala
+     val client: Coll[Byte] = $clientPk // @placeholder Client's public key
+     ```
+     **Output**:
+     ```js
+     [0] $clientPk: Coll[Byte] // Client's public key
+     ```
+
+
+2. ### Comment block declaration
+   **Pattern**: `@placeholder <name>: <type> [= <value>] [description]`
+   - **Example**:
+     ```scala
+     // @placeholder deadline: SInt            Payment deadline
+     // @placeholder active: Boolean = true    Is invoice active
+     ```
+     **Output**:
+     ```js
+     [0] deadline: SInt // Payment deadline
+     [1] active: Boolean = true // Is invoice active
+     ```
+
 ## Configuration
 
 ### Supported Encodings
