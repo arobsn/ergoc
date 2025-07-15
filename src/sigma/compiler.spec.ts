@@ -91,7 +91,6 @@ describe("ErgoScript Compiler", () => {
 
     expect(output.tree.toHex()).toBe(tv.tree);
     expect(hex.encode(output.tree.template)).toBe(tv.template);
-    expect(hex.encode(output.tree.template)).toBe(tv.template);
 
     expect(output.tree.hasSegregatedConstants).toBe(tv.options.segregateConstants ?? false);
     expect(output.tree.version).toBe(tv.options.version ?? 1);

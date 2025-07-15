@@ -5,6 +5,8 @@ import { extractPlaceholders, type PlaceholderInfo } from "../parser";
 import { hex, randomBytes } from "@fleet-sdk/crypto";
 import { stringifyData } from "../data";
 
+const MAX_I32 = 2_147_483_647;
+
 function createMemoizedCompiler(factory: () => ReturnType<typeof SigmaCompiler$.forMainnet>) {
   let instance: ReturnType<typeof factory> | undefined;
   return () => {
@@ -27,7 +29,7 @@ export function compile(script: string, options?: CompilerOptions): CompilerOutp
   const map: Record<string, Value> = { ...opt.map };
   const placeholders = extractPlaceholders(script);
   const valueMap = new Map<string, PlaceholderInfo>();
-  let numericId = 2147483647; // max 32-bit int, start from a high number to avoid collisions with user-defined values
+  let numericId = MAX_I32; // start from a high number to avoid collisions with user-defined values
   for (const placeholder of placeholders) {
     if (placeholder.name in map) {
       continue;
@@ -72,7 +74,7 @@ export function compile(script: string, options?: CompilerOptions): CompilerOutp
         index: i.toString(),
         type: sanitizeTypeNamePrefix(constant.type.toString()),
         value: constant.data,
-        placeholder: valueMap.size ? valueMap.get(stringifyData(constant.data)) : undefined
+        placeholder: valueMap.get(stringifyData(constant.data))
       }))
   };
 }
