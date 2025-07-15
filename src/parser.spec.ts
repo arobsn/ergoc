@@ -33,6 +33,7 @@ describe("placeholder extraction", () => {
       val userId: Coll[Byte] = userId //   @placeholder User ID
       val isActive: Boolean = $active //   @placeholder
       val deadline: Int = _deadline //     @placeholder     Payment deadline
+      val test: Coll[Byte] = $tokenId; // @placeholder
 
       // invalid cases
       val _deadline: Int = 50 //           Payment deadline" // should be ignored, @placeholder it not present
@@ -41,7 +42,8 @@ describe("placeholder extraction", () => {
     expect(extractPlaceholders(lines)).toEqual([
       { name: "userId", type: "Coll[Byte]", description: "User ID" },
       { name: "$active", type: "Boolean", description: "" },
-      { name: "_deadline", type: "Int", description: "Payment deadline" }
+      { name: "_deadline", type: "Int", description: "Payment deadline" },
+      { name: "$tokenId", type: "Coll[Byte]", description: "" }
     ]);
   });
 });
@@ -50,7 +52,7 @@ describe("line splitting", () => {
   it("Should split lines by statement", () => {
     const script = `
          // This is a comment
-         val x: Int = 10; val y: Int = 20
+         val x: Int = 10; // inline comment
          val z: Int = x + y
    
 
@@ -62,8 +64,7 @@ describe("line splitting", () => {
 
     const expectedLines = [
       "// This is a comment",
-      "val x: Int = 10",
-      "val y: Int = 20",
+      "val x: Int = 10; // inline comment",
       "val z: Int = x + y",
       "// Another comment",
       "val test = if (z > 0) {",

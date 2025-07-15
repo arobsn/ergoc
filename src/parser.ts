@@ -13,7 +13,7 @@ const COMMENT_BLOCK_PLACEHOLDER_REGEX =
 
 // val <variable-name>: <type> = <name> // @placeholder [description]
 const INLINE_PLACEHOLDER_REGEX =
-  /^\s*val\s+\w+\s*:\s*([\w\[\]]+)\s*=\s*([$\w]+)\s*\/\/\s*@placeholder\s*(.*)$/i;
+  /^\s*val\s+\w+\s*:\s*([\w\[\]]+)\s*=\s*([$\w]+)\s*;?\s*\/\/\s*@placeholder\s*(.*)$/i;
 
 export function extractPlaceholders(source: string): PlaceholderInfo[] {
   const results: PlaceholderInfo[] = [];
@@ -55,7 +55,7 @@ function matchInlinePlaceholder(line: string): PlaceholderInfo | undefined {
 
 export function splitSource(source: string): string[] {
   return source
-    .split(/(?:\r?\n|;)/)
+    .split(/\r?\n/)
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 }
