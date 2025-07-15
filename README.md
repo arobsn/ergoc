@@ -105,7 +105,7 @@ ergoc introduces the `@placeholder` keyword as a convention to detect placeholde
      **Output**:
      ```js
      [0] deadline: SInt // Payment deadline
-     [1] active: SLong = 100 // Asset price
+     [1] price: SLong = 100 // Asset price
      ```
 ### ⚠️ Supported types
 Currently, constant placeholder tracking only supports the following types: `Coll[Byte]`, `Int`, and `Long`.
