@@ -102,7 +102,7 @@ export const log = {
       // biome-ignore lint/suspicious/noConsoleLog: <explanation>
       console.log(
         `${`[${yellow(i.padStart(iPad))}]`} ${nameAndType}${pad} =`,
-        data,
+        placeholder.value === undefined ? `${data} ${dim("[implied]")}` : data,
         placeholder.description ? gray(` // ${placeholder.description}`) : ""
       );
       return this;
