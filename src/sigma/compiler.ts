@@ -13,7 +13,7 @@ function createMemoizedCompiler(factory: () => ReturnType<typeof SigmaCompiler$.
 const _getMainnetCompiler = createMemoizedCompiler(() => SigmaCompiler$.forMainnet());
 const _getTestnetCompiler = createMemoizedCompiler(() => SigmaCompiler$.forTestnet());
 
-export function compile(script: string, options?: CompilerOptions): ErgoTree {
+export function compile(script: string, options?: CompilerOptions): CompilerOutput {
   const opt = ensureDefaults(options, COMPILER_DEFAULTS);
 
   let headerFlags = 0x00 | opt.version;
@@ -29,8 +29,38 @@ export function compile(script: string, options?: CompilerOptions): ErgoTree {
     // to something else
     .toHex();
 
-  return new ErgoTree(output, opt.network === "mainnet" ? Network.Mainnet : Network.Testnet);
+  const tree = new ErgoTree(output, opt.network === "mainnet" ? Network.Mainnet : Network.Testnet);
+
+  return {
+    tree,
+    parseConstants: () =>
+      tree.constants.map((constant, i) => ({
+        index: i.toString(),
+        type: sanitizeTypeNamePrefix(constant.type.toString()),
+        value: constant.data
+      }))
+  };
 }
+
+function sanitizeTypeNamePrefix(typeName: string): string {
+  return typeName.replace(
+    /S(BigInt|Bool|Byte|GroupElement|Int|Long|Short|Coll|Tuple|SigmaProp)/g,
+    (_, key) => key.replace("S", "") // remove leading 'S' from type names
+  );
+}
+
+export type ConstantInfo = {
+  index: string;
+  type: string;
+  value: unknown;
+  name?: string;
+  description?: string;
+};
+
+type CompilerOutput = {
+  tree: ErgoTree;
+  parseConstants: () => ConstantInfo[];
+};
 
 type CompilerOptionsBase = {
   version?: number;

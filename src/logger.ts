@@ -1,7 +1,6 @@
 import { blue, dim, green, magenta, red, white, yellow } from "picocolors";
 import { formatData, isNumberRelevant, isNumeric } from "./data";
-
-export type ParsedConstants = [string, string, unknown];
+import type { ConstantInfo } from "./sigma/compiler";
 
 export const log = {
   task(message: string) {
@@ -44,13 +43,13 @@ export const log = {
     return this;
   },
 
-  constants(constants: ParsedConstants[], verbose: boolean) {
+  constants(constants: ConstantInfo[], verbose: boolean) {
     const toLog = verbose
       ? constants
-      : constants.filter(([_i, type, data]) => {
-          if (isNumeric(data)) return isNumberRelevant(data as number | bigint);
-          if (Array.isArray(data)) return data.length > 0;
-          if (type === "Boolean") return data === false;
+      : constants.filter((c) => {
+          if (isNumeric(c.value)) return isNumberRelevant(c.value as number | bigint);
+          if (Array.isArray(c.value)) return c.value.length > 0;
+          if (c.type === "Boolean") return c.value === false;
           return true; // Log all other types
         });
 
@@ -67,11 +66,11 @@ export const log = {
       return this;
     }
 
-    const maxIndexLen = Math.max(...toLog.map(([i]) => i.length));
-    const maxTypeLen = Math.max(...toLog.map(([_i, type]) => type.length));
+    const maxIndexLen = Math.max(...toLog.map((c) => c.index.length));
+    const maxTypeLen = Math.max(...toLog.map((c) => c.type.length));
 
-    for (const [i, type, data] of toLog) {
-      this.constant(i, type, formatData(data, type), maxIndexLen, maxTypeLen);
+    for (const c of toLog) {
+      this.constant(c.index, c.type, formatData(c.value, c.type), maxIndexLen, maxTypeLen);
     }
 
     return this;

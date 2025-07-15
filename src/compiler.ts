@@ -4,7 +4,7 @@ import { cyan, dim } from "picocolors";
 import { formatSize } from "./data";
 import { FileNotFoundError, InvalidParameterError } from "./errors";
 import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
-import { type ParsedConstants, log } from "./logger";
+import { log } from "./logger";
 
 // import the compiler dynamically to avoid loading it when not necessary
 const getSigmaCompiler = () => import("./sigma/compiler");
@@ -40,7 +40,7 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
   if (!existsSync(filename)) throw new FileNotFoundError(filename);
 
   const script = readFileSync(filename, "utf-8");
-  const tree = sigmaCompiler.compile(script, options);
+  const { tree, parseConstants } = sigmaCompiler.compile(script, options);
   const treeBytes = tree.bytes;
   const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 
@@ -75,23 +75,8 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
         .nl();
     }
 
-    const consts: ParsedConstants[] = [];
-    let i = 0;
-
-    for (const constant of tree.constants) {
-      consts.push([i.toString(), scapeTypeName(constant.type.toString()), constant.data]);
-      i++;
-    }
-
-    log.constants(consts, flags.verbose).nl();
+    log.constants(parseConstants(), flags.verbose).nl();
   }
-}
-
-function scapeTypeName(typeName: string): string {
-  return typeName.replace(
-    /S(BigInt|Bool|Byte|GroupElement|Int|Long|Short|Coll|Tuple|SigmaProp)/g,
-    (_, key) => key.replace("S", "") // remove leading 'S' from type names
-  );
 }
 
 export async function compile(
