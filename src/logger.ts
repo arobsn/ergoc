@@ -48,6 +48,7 @@ export const log = {
     const toLog = verbose
       ? constants
       : constants.filter((c) => {
+          if (c.placeholder) return true; // Always log placeholders
           if (isNumeric(c.value)) return isNumberRelevant(c.value as number | bigint);
           if (Array.isArray(c.value)) return c.value.length > 0;
           if (c.type === "Boolean") return c.value === false;
