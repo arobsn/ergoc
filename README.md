@@ -79,7 +79,7 @@ ergoc ./contract.es --ergotree-version 0 --verbose
 ergoc ./contract.es --compact > compiled.hex
 ```
 
-# Constant placeholders
+## Constant placeholders
 
 ergoc introduces the `@placeholder` keyword as a convention to detect placeholders. This keyword must always be declared inside comments in only two specific cases: as part of a variable declaration or within comment lines or blocks.
 
@@ -100,13 +100,15 @@ ergoc introduces the `@placeholder` keyword as a convention to detect placeholde
    - **Example**:
      ```scala
      // @placeholder deadline: SInt            Payment deadline
-     // @placeholder active: Boolean = true    Is invoice active
+     // @placeholder price: SLong = 100L    Asset price
      ```
      **Output**:
      ```js
      [0] deadline: SInt // Payment deadline
-     [1] active: Boolean = true // Is invoice active
+     [1] active: SLong = 100 // Asset price
      ```
+### ⚠️ Supported types
+Currently, constant placeholder tracking only supports the following types: `Coll[Byte]`, `Int`, and `Long`.
 
 ## Configuration
 
