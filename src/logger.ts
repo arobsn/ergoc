@@ -13,6 +13,10 @@ export const log = {
     console.error(red("✖ Error:"), red(message));
     return this;
   },
+  warning(message: string) {
+    console.warn(yellow("⚠ Warning:"), yellow(message));
+    return this;
+  },
   info(...content: unknown[]) {
     console.info(blue("ℹ"), ...content);
     return this;
@@ -98,8 +102,8 @@ export const log = {
   ) {
     if (placeholder) {
       const nameAndType = `${white(placeholder.name)}: ${cyan(type)}`;
-      const padLen = tPad - (placeholder.name.length + type.length + 2);
-      const pad = padLen ? " ".repeat(padLen) : "";
+      const remainingPadding = tPad - (placeholder.name.length + type.length + 2);
+      const pad = remainingPadding ? " ".repeat(remainingPadding) : "";
       // biome-ignore lint/suspicious/noConsoleLog: <explanation>
       console.log(
         `${`[${yellow(i.padStart(iPad))}]`} ${nameAndType}${pad} =`,
@@ -111,6 +115,27 @@ export const log = {
 
     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
     console.log(`${`[${yellow(i.padStart(iPad))}]`} ${cyan(type.padEnd(tPad))} =`, data);
+    return this;
+  },
+
+  placeholders(placeholders: PlaceholderInfo[]) {
+    const maxLen = Math.max(...placeholders.map((p) => p.name.length + p.type.length));
+    for (const placeholder of placeholders) {
+      this.placeholder(placeholder, Math.max(maxLen));
+    }
+
+    return this;
+  },
+
+  placeholder(placeholder: PlaceholderInfo, pad: number) {
+    const nameAndType = `${white(placeholder.name)}: ${cyan(placeholder.type)}`;
+    const value = formatData(placeholder.value, placeholder.type);
+    const description = placeholder.description ? gray(` // ${placeholder.description}`) : "";
+    const remainingPadding = pad - (placeholder.name.length + placeholder.type.length);
+    const padStr = remainingPadding ? " ".repeat(remainingPadding) : "";
+
+    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+    console.log(`${nameAndType}${padStr} =`, value, description);
     return this;
   }
 };

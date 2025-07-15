@@ -5,6 +5,7 @@ import { formatSize } from "./data";
 import { FileNotFoundError, InvalidParameterError } from "./errors";
 import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
 import { log } from "./logger";
+import type { PlaceholderInfo } from "./parser";
 
 // import the compiler dynamically to avoid loading it when not necessary
 const getSigmaCompiler = () => import("./sigma/compiler");
@@ -75,7 +76,27 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
         .nl();
     }
 
-    log.constants(parseConstants(), flags.verbose).nl();
+    const constants = parseConstants();
+    const collidingConstants = constants.filter(
+      (c, _, arr) => c.placeholder && arr.some((c2) => c !== c2 && c.placeholder === c2.placeholder)
+    );
+
+    if (collidingConstants.length) {
+      const collidingPlaceholders = new Set<PlaceholderInfo>();
+      for (const c of collidingConstants) {
+        collidingPlaceholders.add(c.placeholder as PlaceholderInfo);
+        c.placeholder = undefined;
+      }
+
+      log
+        .warning("The following placeholders have colliding constant values:")
+        .placeholders([...collidingPlaceholders])
+        .nl()
+        .info("Set different values for these placeholders to avoid collisions.")
+        .nl();
+    }
+
+    log.constants(constants, flags.verbose).nl();
   }
 }
 
