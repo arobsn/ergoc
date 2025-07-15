@@ -1,7 +1,7 @@
-import { blue, dim, green, magenta, red, white, yellow } from "picocolors";
+import { blue, cyan, dim, gray, green, magenta, red, white, yellow } from "picocolors";
 import { formatData, isNumberRelevant, isNumeric } from "./data";
-
-export type ParsedConstants = [string, string, unknown];
+import type { ConstantInfo } from "./sigma/compiler";
+import type { PlaceholderInfo } from "./parser";
 
 export const log = {
   task(message: string) {
@@ -11,6 +11,10 @@ export const log = {
   },
   error(message: string) {
     console.error(red("✖ Error:"), red(message));
+    return this;
+  },
+  warning(message: string) {
+    console.warn(yellow("⚠ Warning:"), yellow(message));
     return this;
   },
   info(...content: unknown[]) {
@@ -44,13 +48,14 @@ export const log = {
     return this;
   },
 
-  constants(constants: ParsedConstants[], verbose: boolean) {
+  constants(constants: ConstantInfo[], verbose: boolean) {
     const toLog = verbose
       ? constants
-      : constants.filter(([_i, type, data]) => {
-          if (isNumeric(data)) return isNumberRelevant(data as number | bigint);
-          if (Array.isArray(data)) return data.length > 0;
-          if (type === "Boolean") return data === false;
+      : constants.filter((c) => {
+          if (c.placeholder) return true; // Always log placeholders
+          if (isNumeric(c.value)) return isNumberRelevant(c.value as number | bigint);
+          if (Array.isArray(c.value)) return c.value.length > 0;
+          if (c.type === "Boolean") return c.value === false;
           return true; // Log all other types
         });
 
@@ -67,18 +72,70 @@ export const log = {
       return this;
     }
 
-    const maxIndexLen = Math.max(...toLog.map(([i]) => i.length));
-    const maxTypeLen = Math.max(...toLog.map(([_i, type]) => type.length));
+    const maxIndexLen = Math.max(...toLog.map((c) => c.index.length));
+    const maxTypeLen = Math.max(
+      ...toLog.map(
+        (c) => c.type.length + (c.placeholder?.name?.length ? c.placeholder.name.length + 2 : 0)
+      )
+    );
 
-    for (const [i, type, data] of toLog) {
-      this.constant(i, type, formatData(data, type), maxIndexLen, maxTypeLen);
+    for (const c of toLog) {
+      this.constant(
+        c.index,
+        c.type,
+        formatData(c.value, c.type),
+        c.placeholder,
+        maxIndexLen,
+        maxTypeLen
+      );
     }
 
     return this;
   },
-  constant(i: string, type: string, data: unknown, iPad: number, tPad: number) {
+  constant(
+    i: string,
+    type: string,
+    data: unknown,
+    placeholder: PlaceholderInfo | undefined,
+    iPad: number,
+    tPad: number
+  ) {
+    if (placeholder) {
+      const nameAndType = `${white(placeholder.name)}: ${cyan(type)}`;
+      const remainingPadding = tPad - (placeholder.name.length + type.length + 2);
+      const pad = remainingPadding ? " ".repeat(remainingPadding) : "";
+      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+      console.log(
+        `${`[${yellow(i.padStart(iPad))}]`} ${nameAndType}${pad} =`,
+        placeholder.value === undefined ? `${data} ${dim("[implied]")}` : data,
+        placeholder.description ? gray(` // ${placeholder.description}`) : ""
+      );
+      return this;
+    }
+
     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-    console.log(`${`[${yellow(i.padStart(iPad))}]:`} ${magenta(type.padEnd(tPad))} =`, data);
+    console.log(`${`[${yellow(i.padStart(iPad))}]`} ${cyan(type.padEnd(tPad))} =`, data);
+    return this;
+  },
+
+  placeholders(placeholders: PlaceholderInfo[]) {
+    const maxLen = Math.max(...placeholders.map((p) => p.name.length + p.type.length));
+    for (const placeholder of placeholders) {
+      this.placeholder(placeholder, Math.max(maxLen));
+    }
+
+    return this;
+  },
+
+  placeholder(placeholder: PlaceholderInfo, pad: number) {
+    const nameAndType = `${white(placeholder.name)}: ${cyan(placeholder.type)}`;
+    const value = formatData(placeholder.value, placeholder.type);
+    const description = placeholder.description ? gray(` // ${placeholder.description}`) : "";
+    const remainingPadding = pad - (placeholder.name.length + placeholder.type.length);
+    const padStr = remainingPadding ? " ".repeat(remainingPadding) : "";
+
+    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+    console.log(`${nameAndType}${padStr} =`, value, description);
     return this;
   }
 };

@@ -4,7 +4,8 @@ import { cyan, dim } from "picocolors";
 import { formatSize } from "./data";
 import { FileNotFoundError, InvalidParameterError } from "./errors";
 import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
-import { type ParsedConstants, log } from "./logger";
+import { log } from "./logger";
+import type { PlaceholderInfo } from "./parser";
 
 // import the compiler dynamically to avoid loading it when not necessary
 const getSigmaCompiler = () => import("./sigma/compiler");
@@ -14,7 +15,7 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
 
   const sigmaCompiler = await getSigmaCompiler();
   const enc = parseEncoding(flags.encoding);
-  const version = parseErgoTreeVersion(flags.ergotreeVersion) as 0 | 1; // todo: support v2 and v3 in fleet
+  const version = parseErgoTreeVersion(flags.ergotreeVersion) as 0 | 1;
   const commonOptions = {
     network: parseNetwork(flags.network),
     segregateConstants: flags.constSegregation
@@ -40,7 +41,7 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
   if (!existsSync(filename)) throw new FileNotFoundError(filename);
 
   const script = readFileSync(filename, "utf-8");
-  const tree = sigmaCompiler.compile(script, options);
+  const { tree, parseConstants } = sigmaCompiler.compile(script, options);
   const treeBytes = tree.bytes;
   const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 
@@ -75,23 +76,28 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
         .nl();
     }
 
-    const consts: ParsedConstants[] = [];
-    let i = 0;
+    const constants = parseConstants();
+    const collidingConstants = constants.filter(
+      (c, _, arr) => c.placeholder && arr.some((c2) => c !== c2 && c.placeholder === c2.placeholder)
+    );
 
-    for (const constant of tree.constants) {
-      consts.push([i.toString(), scapeTypeName(constant.type.toString()), constant.data]);
-      i++;
+    if (collidingConstants.length) {
+      const collidingPlaceholders = new Set<PlaceholderInfo>();
+      for (const c of collidingConstants) {
+        collidingPlaceholders.add(c.placeholder as PlaceholderInfo);
+        c.placeholder = undefined;
+      }
+
+      log
+        .warning("The following placeholders have colliding constant values:")
+        .placeholders([...collidingPlaceholders])
+        .nl()
+        .info("Set different values for these placeholders to avoid collisions.")
+        .nl();
     }
 
-    log.constants(consts, flags.verbose).nl();
+    log.constants(constants, flags.verbose).nl();
   }
-}
-
-function scapeTypeName(typeName: string): string {
-  return typeName.replace(
-    /S(BigInt|Bool|Byte|GroupElement|Int|Long|Short|Coll|Tuple|SigmaProp)/g,
-    (_, key) => key.replace("S", "") // remove leading 'S' from type names
-  );
 }
 
 export async function compile(

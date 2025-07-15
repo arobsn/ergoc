@@ -87,25 +87,24 @@ const compilerTestVectors: {
 
 describe("ErgoScript Compiler", () => {
   test.each(compilerTestVectors)("Script compilation: $name", (tv) => {
-    const tree = compile(tv.script, tv.options);
+    const output = compile(tv.script, tv.options);
 
-    expect(tree.toHex()).toBe(tv.tree);
-    expect(hex.encode(tree.template)).toBe(tv.template);
-    expect(hex.encode(tree.template)).toBe(tv.template);
+    expect(output.tree.toHex()).toBe(tv.tree);
+    expect(hex.encode(output.tree.template)).toBe(tv.template);
 
-    expect(tree.hasSegregatedConstants).toBe(tv.options.segregateConstants ?? false);
-    expect(tree.version).toBe(tv.options.version ?? 1);
+    expect(output.tree.hasSegregatedConstants).toBe(tv.options.segregateConstants ?? false);
+    expect(output.tree.version).toBe(tv.options.version ?? 1);
 
     if (tv.options.version === 1) {
-      expect(tree.hasSize).toBe(true);
+      expect(output.tree.hasSize).toBe(true);
     } else if (tv.options.version === 0) {
-      expect(tree.hasSize).toBe(tv.options.includeSize ?? false);
+      expect(output.tree.hasSize).toBe(tv.options.includeSize ?? false);
     }
 
     if (tv.options.segregateConstants) {
-      expect(tree.constants).not.toBeEmpty();
+      expect(output.tree.constants).not.toBeEmpty();
     } else {
-      expect(tree.constants).toBeEmpty();
+      expect(output.tree.constants).toBeEmpty();
     }
   });
 
@@ -117,11 +116,11 @@ describe("ErgoScript Compiler", () => {
   });
 
   it("should override network from compiler options", () => {
-    const testnetTree = compile(testnetScript, { network: "testnet" });
-    expect(ErgoAddress.decode(testnetTree.encode()).network).toBe(Network.Testnet);
+    const testnetOutput = compile(testnetScript, { network: "testnet" });
+    expect(ErgoAddress.decode(testnetOutput.tree.encode()).network).toBe(Network.Testnet);
 
-    const mainnetTree = compile(mainnetScript, { network: "mainnet" });
-    expect(ErgoAddress.decode(mainnetTree.encode()).network).toBe(Network.Mainnet);
+    const mainnetOutput = compile(mainnetScript, { network: "mainnet" });
+    expect(ErgoAddress.decode(mainnetOutput.tree.encode()).network).toBe(Network.Mainnet);
   });
 
   it("Should compile for mainnet", () => {
@@ -134,10 +133,12 @@ describe("ErgoScript Compiler", () => {
   it("Should use default if no compiler options is set", () => {
     const { version, segregateConstants } = COMPILER_DEFAULTS;
 
-    const tree = compile("sigmaProp(HEIGHT > 100)");
-    expect(tree.toHex()).toBe("19090104c801d191a37300");
-    expect(tree.hasSegregatedConstants).toBe(segregateConstants);
-    expect(tree.version).toBe(version);
-    expect(tree.hasSize).toBe(version > 0 || (version === 0 && COMPILER_DEFAULTS.includeSize));
+    const output = compile("sigmaProp(HEIGHT > 100)");
+    expect(output.tree.toHex()).toBe("19090104c801d191a37300");
+    expect(output.tree.hasSegregatedConstants).toBe(segregateConstants);
+    expect(output.tree.version).toBe(version);
+    expect(output.tree.hasSize).toBe(
+      version > 0 || (version === 0 && COMPILER_DEFAULTS.includeSize)
+    );
   });
 });
