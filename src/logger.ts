@@ -1,6 +1,7 @@
-import { blue, dim, green, magenta, red, white, yellow } from "picocolors";
+import { blue, cyan, dim, gray, green, magenta, red, white, yellow } from "picocolors";
 import { formatData, isNumberRelevant, isNumeric } from "./data";
 import type { ConstantInfo } from "./sigma/compiler";
+import type { PlaceholderInfo } from "./parser";
 
 export const log = {
   task(message: string) {
@@ -67,17 +68,48 @@ export const log = {
     }
 
     const maxIndexLen = Math.max(...toLog.map((c) => c.index.length));
-    const maxTypeLen = Math.max(...toLog.map((c) => c.type.length));
+    const maxTypeLen = Math.max(
+      ...toLog.map(
+        (c) => c.type.length + (c.placeholder?.name?.length ? c.placeholder.name.length + 2 : 0)
+      )
+    );
 
     for (const c of toLog) {
-      this.constant(c.index, c.type, formatData(c.value, c.type), maxIndexLen, maxTypeLen);
+      this.constant(
+        c.index,
+        c.type,
+        formatData(c.value, c.type),
+        c.placeholder,
+        maxIndexLen,
+        maxTypeLen
+      );
     }
 
     return this;
   },
-  constant(i: string, type: string, data: unknown, iPad: number, tPad: number) {
+  constant(
+    i: string,
+    type: string,
+    data: unknown,
+    placeholder: PlaceholderInfo | undefined,
+    iPad: number,
+    tPad: number
+  ) {
+    if (placeholder) {
+      const nameAndType = `${white(placeholder.name)}: ${cyan(type)}`;
+      const padLen = tPad - (placeholder.name.length + type.length + 2);
+      const pad = padLen ? " ".repeat(padLen) : "";
+      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+      console.log(
+        `${`[${yellow(i.padStart(iPad))}]`} ${nameAndType}${pad} =`,
+        data,
+        placeholder.description ? gray(` // ${placeholder.description}`) : ""
+      );
+      return this;
+    }
+
     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-    console.log(`${`[${yellow(i.padStart(iPad))}]:`} ${magenta(type.padEnd(tPad))} =`, data);
+    console.log(`${`[${yellow(i.padStart(iPad))}]`} ${cyan(type.padEnd(tPad))} =`, data);
     return this;
   }
 };

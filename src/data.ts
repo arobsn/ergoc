@@ -25,6 +25,14 @@ function formatBytes(bytes: number, decimals = 2) {
   return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 }
 
+export function stringifyData(data: unknown): string {
+  if (data === undefined || data === null) return yellow("null");
+  if (isNumeric(data)) return data.toString();
+  if (data instanceof Uint8Array) return hex.encode(data);
+
+  return String(data);
+}
+
 export function formatData(data: unknown, type: string): unknown {
   if (data === undefined || data === null) return yellow("null");
   if (isNumeric(data)) return yellow(data.toString());

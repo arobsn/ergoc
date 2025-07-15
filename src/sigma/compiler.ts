@@ -1,6 +1,9 @@
 import { Network, ensureDefaults, ergoTreeHeaderFlags } from "@fleet-sdk/common";
-import { ErgoTree } from "@fleet-sdk/core";
-import { SigmaCompiler$, type Value } from "sigmastate-js/main";
+import { ErgoTree, SByte, SColl, SInt, SLong } from "@fleet-sdk/core";
+import { SigmaCompiler$, Value$, type Value } from "sigmastate-js/main";
+import { extractPlaceholders, type PlaceholderInfo } from "../parser";
+import { hex, randomBytes } from "@fleet-sdk/crypto";
+import { stringifyData } from "../data";
 
 function createMemoizedCompiler(factory: () => ReturnType<typeof SigmaCompiler$.forMainnet>) {
   let instance: ReturnType<typeof factory> | undefined;
@@ -21,10 +24,41 @@ export function compile(script: string, options?: CompilerOptions): CompilerOutp
     headerFlags |= ergoTreeHeaderFlags.sizeInclusion;
   }
 
-  const compiler = opt.network === "mainnet" ? _getMainnetCompiler() : _getTestnetCompiler();
+  const map: Record<string, Value> = { ...opt.map };
+  const placeholders = extractPlaceholders(script);
+  const valueMap = new Map<string, PlaceholderInfo>();
+  let numericId = 2147483647; // max 32-bit int, start from a high number to avoid collisions with user-defined values
+  for (const placeholder of placeholders) {
+    if (placeholder.name in map) {
+      continue;
+    }
 
+    if (placeholder.type === "Coll[Byte]") {
+      const data = placeholder.value || hex.encode(randomBytes(16));
+      const value = SColl(SByte, data).toHex();
+      valueMap.set(data, placeholder);
+
+      map[placeholder.name] = Value$.fromHex(value);
+    } else if (placeholder.type === "Int") {
+      const value = SInt(Number(placeholder.value || numericId--));
+
+      valueMap.set(value.data.toString(), placeholder);
+      map[placeholder.name] = Value$.fromHex(value.toHex());
+    } else if (placeholder.type === "Long") {
+      const value = SLong(BigInt(placeholder.value || numericId--));
+
+      valueMap.set(value.data.toString(), placeholder);
+      map[placeholder.name] = Value$.fromHex(value.toHex());
+    } else {
+      throw new Error(
+        `The "${placeholder.type}" type for placeholder "${placeholder.name}" is not supported.`
+      );
+    }
+  }
+
+  const compiler = opt.network === "mainnet" ? _getMainnetCompiler() : _getTestnetCompiler();
   const output = compiler
-    .compile(opt.map, opt.segregateConstants, headerFlags, script)
+    .compile(map, opt.segregateConstants, headerFlags, script)
     // use .toHex() to avoid production errors as fullOpt builder of Sigma-JS renames .bytes().u
     // to something else
     .toHex();
@@ -37,7 +71,8 @@ export function compile(script: string, options?: CompilerOptions): CompilerOutp
       tree.constants.map((constant, i) => ({
         index: i.toString(),
         type: sanitizeTypeNamePrefix(constant.type.toString()),
-        value: constant.data
+        value: constant.data,
+        placeholder: valueMap.size ? valueMap.get(stringifyData(constant.data)) : undefined
       }))
   };
 }
@@ -53,8 +88,7 @@ export type ConstantInfo = {
   index: string;
   type: string;
   value: unknown;
-  name?: string;
-  description?: string;
+  placeholder?: PlaceholderInfo;
 };
 
 type CompilerOutput = {
