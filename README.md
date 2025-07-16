@@ -100,12 +100,12 @@ ergoc introduces the `@placeholder` keyword as a convention to detect placeholde
    - **Example**:
      ```scala
      // @placeholder deadline: SInt            Payment deadline
-     // @placeholder price: SLong = 100L    Asset price
+     // @placeholder price: SLong = 100L
      ```
      **Output**:
      ```js
      [0] deadline: SInt // Payment deadline
-     [1] price: SLong = 100 // Asset price
+     [1] price: SLong = 100
      ```
 ### ⚠️ Supported Types
 Currently, constant placeholder tracking only supports the following types: `Coll[Byte]`, `Int`, and `Long`.
