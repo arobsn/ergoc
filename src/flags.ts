@@ -5,6 +5,7 @@ export const base58Encodings = new Set(["base58", "b58", "addr", "address"]);
 export const allEncodings = new Set([...base16Encodings.keys(), ...base58Encodings.keys()]);
 export const networks = new Set(["mainnet", "testnet"]);
 export const ergoTreeVersions = new Set(["0", "1", "2", "3", "latest"]);
+export const outputFormats = new Set(["json", "text"]);
 
 export function parseEncoding(encoding: string): "base16" | "base58" {
   if (!allEncodings.has(encoding)) throw new InvalidParameterError(encoding, allEncodings);
@@ -22,6 +23,11 @@ export function parseErgoTreeVersion(version: string): number {
   return Number.parseInt(version, 10) as number;
 }
 
+export function parseOutputFormat(format: string): "json" | "text" {
+  if (!outputFormats.has(format)) throw new InvalidParameterError(format, outputFormats);
+  return format as "json" | "text";
+}
+
 export interface CompilerFlags {
   network: string;
   ergotreeVersion: string;
@@ -31,4 +37,5 @@ export interface CompilerFlags {
   compact: boolean;
   verbose: boolean;
   watch: boolean;
+  output: string;
 }

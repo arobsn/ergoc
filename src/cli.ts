@@ -12,16 +12,17 @@ export function buildCli() {
         $ ${ergoc} ${ip("<script-file>")} ${cyan("[options]")} 
 
       Options
-        ${op("-w", "--watch")}                Watch for script changes
-        ${op("-h", "--help")}                 Show help
-        ${op("-v", "--version")}              Show version
-        ${op("-c", "--compact")}              Compact output
-        ${op("-e TYPE", "--encoding TYPE")}   ErgoTree output encoding (hex, base58) [default: hex]
-        ${op("-n TYPE", "--network TYPE")}    Contract network (mainnet, testnet) [default: mainnet]
-        ${op("--ergotree-version NUMBER")}  Output Ergotree version (0, 1, 2, 3, latest) [default: latest = 2]
-        ${op("--no-const-segregation")}     Disable ErgoTree constants segregation
-        ${op("--no-size-info")}             Don't include size info if ErgoTree version is set to 0
-        ${op("--verbose")}                  Enable verbose mode, showing additional information
+        ${op("-w", "--watch")}                  Watch for script changes
+        ${op("-h", "--help")}                   Show help
+        ${op("-v", "--version")}                Show version
+        ${op("-c", "--compact")}                Compact output
+        ${op("-e TYPE", "--encoding TYPE")}     ErgoTree output encoding (hex, base58) [default: hex]
+        ${op("-n TYPE", "--network TYPE")}      Contract network (mainnet, testnet) [default: mainnet]
+        ${op("-o FORMAT", "--output FORMAT")}   Output format (json, text) [default: text]
+        ${op("--ergotree-version NUMBER")}    Output Ergotree version (0, 1, 2, 3, latest) [default: latest = 2]
+        ${op("--no-const-segregation")}       Disable ErgoTree constants segregation
+        ${op("--no-size-info")}               Don't include size info if ErgoTree version is set to 0
+        ${op("--verbose")}                    Enable verbose mode, showing additional information
 
       Examples
         $ ${ex("./script.es")}
@@ -44,6 +45,7 @@ export function buildCli() {
         version: { type: "boolean", shortFlag: "v" },
         compact: { type: "boolean", shortFlag: "c", default: false },
         encoding: { type: "string", shortFlag: "e", default: "hex" },
+        output: { type: "string", shortFlag: "o", default: "text" },
         network: { type: "string", shortFlag: "n", default: "mainnet" },
         ergotreeVersion: { type: "string", default: "latest" },
         constSegregation: { type: "boolean", default: true },
