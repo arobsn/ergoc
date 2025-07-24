@@ -10,9 +10,8 @@ type ConstantInfo = {
 
 interface JsonOutput {
   expressionTree: string;
-  version?: number;
-  constantSegregated?: boolean;
-  constants?: ConstantInfo[];
+  version: number;
+  constants?: ConstantInfo[]; // if constants are not segregated, this will be undefined
 }
 
 export function outputJson(compilerOutput: CompilerOutput): void {
@@ -20,7 +19,6 @@ export function outputJson(compilerOutput: CompilerOutput): void {
   const jsonOutput: JsonOutput = {
     expressionTree: hex.encode(tree.template),
     version: tree.version,
-    constantSegregated: tree.hasSegregatedConstants,
     constants: tree.hasSegregatedConstants
       ? parseConstants().map((c) => ({
           value: c.toHex(),
