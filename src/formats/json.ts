@@ -1,24 +1,24 @@
 import { hex } from "@fleet-sdk/crypto";
 import type { CompilerOutput } from "../sigma/compiler";
 
-type ConstantInfo = {
+interface ConstantInfo {
   value: string;
   type: string;
   name?: string;
   description?: string;
-};
+}
 
 interface JsonOutput {
+  header: string;
   expressionTree: string;
-  version: number;
   constants?: ConstantInfo[]; // if constants are not segregated, this will be undefined
 }
 
 export function outputJson(compilerOutput: CompilerOutput): void {
   const { tree, parseConstants } = compilerOutput;
   const jsonOutput: JsonOutput = {
+    header: hex.encode(Uint8Array.from([tree.header])),
     expressionTree: hex.encode(tree.template),
-    version: tree.version,
     constants: tree.hasSegregatedConstants
       ? parseConstants().map((c) => ({
           value: c.toHex(),
