@@ -24,7 +24,7 @@ export function outputJson(compilerOutput: CompilerOutput): void {
           value: c.toHex(),
           type: c.type,
           name: c.placeholder?.name,
-          description: c.placeholder?.description ? c.placeholder.description : undefined
+          description: c.placeholder?.description
         }))
       : undefined
   };
