@@ -24,7 +24,9 @@ export function outputJson(compilerOutput: CompilerOutput): void {
           value: c.toHex(),
           type: c.type,
           name: c.placeholder?.name,
-          description: c.placeholder?.description
+          description: c.placeholder?.description // this check can look redundant, but it ensures that empty strings are not included
+            ? c.placeholder.description
+            : undefined
         }))
       : undefined
   };
