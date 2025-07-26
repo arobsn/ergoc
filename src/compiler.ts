@@ -3,9 +3,16 @@ import { blake2b256, hex } from "@fleet-sdk/crypto";
 import { cyan, dim } from "picocolors";
 import { formatSize } from "./data";
 import { FileNotFoundError, InvalidParameterError } from "./errors";
-import { type CompilerFlags, parseEncoding, parseErgoTreeVersion, parseNetwork } from "./flags";
+import {
+  type CompilerFlags,
+  parseEncoding,
+  parseErgoTreeVersion,
+  parseNetwork,
+  parseOutputFormat
+} from "./flags";
 import { log } from "./logger";
 import type { PlaceholderInfo } from "./parser";
+import { outputJson } from "./formats/json";
 
 // import the compiler dynamically to avoid loading it when not necessary
 const getSigmaCompiler = () => import("./sigma/compiler");
@@ -25,7 +32,9 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
       ? { version, includeSize: flags.sizeInfo, ...commonOptions }
       : { version, ...commonOptions };
 
-  if (!flags.compact) {
+  const outputFormat = parseOutputFormat(flags.output);
+
+  if (!flags.compact && outputFormat === "text") {
     log.task(`Compiling ${cyan(filename)}...`);
 
     if (flags.verbose) {
@@ -41,7 +50,14 @@ export async function compileScript(filename: string, flags: CompilerFlags): Pro
   if (!existsSync(filename)) throw new FileNotFoundError(filename);
 
   const script = readFileSync(filename, "utf-8");
-  const { tree, parseConstants } = sigmaCompiler.compile(script, options);
+  const compilerOutput = sigmaCompiler.compile(script, options);
+
+  if (outputFormat === "json") {
+    outputJson(compilerOutput);
+    return;
+  }
+
+  const { tree, parseConstants } = compilerOutput;
   const treeBytes = tree.bytes;
   const encodedTree = enc === "base16" ? tree.toHex() : tree.toAddress().encode();
 

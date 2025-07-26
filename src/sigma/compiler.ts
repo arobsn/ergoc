@@ -74,7 +74,8 @@ export function compile(script: string, options?: CompilerOptions): CompilerOutp
         index: i.toString(),
         type: sanitizeTypeNamePrefix(constant.type.toString()),
         value: constant.data,
-        placeholder: valueMap.get(stringifyData(constant.data))
+        placeholder: valueMap.get(stringifyData(constant.data)),
+        toHex: () => constant.toHex()
       }))
   };
 }
@@ -91,9 +92,10 @@ export type ConstantInfo = {
   type: string;
   value: unknown;
   placeholder?: PlaceholderInfo;
+  toHex: () => string;
 };
 
-type CompilerOutput = {
+export type CompilerOutput = {
   tree: ErgoTree;
   parseConstants: () => ConstantInfo[];
 };
